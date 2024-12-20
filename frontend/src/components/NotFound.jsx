@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default () => {
   return (
     <div className='d-flex flex-column align-items-center justify-content-center vh-100'>
