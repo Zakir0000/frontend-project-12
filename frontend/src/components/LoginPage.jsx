@@ -1,5 +1,7 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../features/authSlice';
 import avatarImage from '../assets/avatar.jpg';
 import { Button, Form, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -8,14 +10,9 @@ import * as Yup from 'yup';
 import routes from '../routes';
 
 const LoginPage = () => {
-  const [error, setError] = useState('');
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate('/');
-    }
-  }, [navigate]);
+  const authState = useSelector((state) => state.auth);
 
   const formik = useFormik({
     initialValues: {
@@ -24,18 +21,31 @@ const LoginPage = () => {
     },
     validationSchema: Yup.object({
       username: Yup.string().required('Username is required'),
-      password: Yup.string().required('Password is required'),
+      password: Yup.string()
+        .required('Password is required')
+        .min(5, 'Password must be at least 6 characters'),
     }),
 
-    onSubmit: async (values) => {
-      setError('');
+    onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        const res = await axios.post(routes.loginPath(), values);
-        const { token } = res.data;
-        localStorage.setItem('token', token);
+        const response = await axios.post(routes.loginPath(), values);
+        dispatch(login(response.data));
+
+        localStorage.setItem('token', response.data.token);
         navigate('/');
-      } catch (err) {
-        setError('Неверное имя пользователя или пароль');
+      } catch (error) {
+        if (error.response && error.response.data) {
+          setErrors({
+            username: error.response.data.username || 'Login failed',
+            password: error.response.data.password,
+          });
+        } else {
+          setErrors({
+            username: 'An error occurred. Please try again.',
+          });
+        }
+      } finally {
+        setSubmitting(false);
       }
     },
   });
@@ -76,7 +86,7 @@ const LoginPage = () => {
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
                       isInvalid={
-                        formik.touched.username && !!formik.errors.username
+                        !!formik.errors.username && formik.touched.username
                       }
                     />
                     <Form.Control.Feedback type='invalid'>
@@ -101,11 +111,12 @@ const LoginPage = () => {
                       {formik.errors.password}
                     </Form.Control.Feedback>
                   </Form.Group>
-                  {error && <Alert variant='danger'>{error}</Alert>}
+
                   <Button
                     type='submit'
                     className='w-100'
-                    variant='outline-primary'>
+                    variant='outline-primary'
+                    disabled={formik.isSubmitting}>
                     Войти
                   </Button>
                 </Form>
