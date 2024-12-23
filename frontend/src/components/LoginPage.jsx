@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../features/authSlice';
 import avatarImage from '../assets/avatar.jpg';
@@ -12,7 +12,7 @@ import routes from '../routes';
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const authState = useSelector((state) => state.auth);
+  const [generalError, setGeneralError] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -20,13 +20,14 @@ const LoginPage = () => {
       password: '',
     },
     validationSchema: Yup.object({
-      username: Yup.string().required('Username is required'),
+      username: Yup.string().required('Имя пользователя обязательно'),
       password: Yup.string()
-        .required('Password is required')
-        .min(5, 'Password must be at least 6 characters'),
+        .required('Пароль обязателен')
+        .min(5, 'Пароль должен содержать не менее 5 символов'),
     }),
 
     onSubmit: async (values, { setSubmitting, setErrors }) => {
+      setGeneralError(null);
       try {
         const response = await axios.post(routes.loginPath(), values);
         dispatch(login(response.data));
@@ -34,15 +35,10 @@ const LoginPage = () => {
         localStorage.setItem('token', response.data.token);
         navigate('/');
       } catch (error) {
-        if (error.response && error.response.data) {
-          setErrors({
-            username: error.response.data.username || 'Login failed',
-            password: error.response.data.password,
-          });
+        if (error.response && error.response.status === 401) {
+          setGeneralError('Неверное имя пользователя или пароль');
         } else {
-          setErrors({
-            username: 'An error occurred. Please try again.',
-          });
+          setGeneralError('Произошла ошибка. Попробуйте снова.');
         }
       } finally {
         setSubmitting(false);
@@ -75,6 +71,7 @@ const LoginPage = () => {
                   onSubmit={formik.handleSubmit}
                   className='col-12 col-md-6 mt-3 mt-md-0'>
                   <h1 className='text-center mb-4'>Войти</h1>
+
                   <Form.Group className='mb-3'>
                     <Form.Label htmlFor='username'>Ваш ник</Form.Label>
                     <Form.Control
@@ -110,8 +107,12 @@ const LoginPage = () => {
                     <Form.Control.Feedback type='invalid'>
                       {formik.errors.password}
                     </Form.Control.Feedback>
+                    {generalError && (
+                      <Alert variant='danger' className='text-center'>
+                        {generalError}
+                      </Alert>
+                    )}
                   </Form.Group>
-
                   <Button
                     type='submit'
                     className='w-100'
