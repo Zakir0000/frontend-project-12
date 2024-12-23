@@ -33,6 +33,7 @@ const LoginPage = () => {
         dispatch(login(response.data));
 
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', response.data.username);
         navigate('/');
       } catch (error) {
         if (error.response && error.response.status === 401) {

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setChannels } from '../features/chatSlice';
+import { useNavigate } from 'react-router-dom';
+import { addMessage, setChannels, setMessages } from '../features/chatSlice';
 import axios from 'axios';
 import cn from 'classnames';
+import io from 'socket.io-client';
 
 const Chat = () => {
   const channels = useSelector((state) => state.chat.channels);
+  const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [activeChannelId, setActiveChannelId] = useState(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const fetchChannels = async () => {
@@ -25,14 +31,84 @@ const Chat = () => {
         }
       } catch (error) {
         console.error('Failed to fetch channels:', error);
+        navigate('/login');
       }
     };
 
     fetchChannels();
+  }, [dispatch, navigate]);
+
+  useEffect(() => {
+    if (activeChannelId) {
+      const fetchMessages = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get('/api/v1/messages', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const channelMessages = response.data.filter(
+            (message) => message.channelId === activeChannelId,
+          );
+          dispatch(setMessages(channelMessages));
+        } catch (error) {
+          console.error('Failed to fetch messages:', error);
+        }
+      };
+
+      fetchMessages();
+    }
+  }, [activeChannelId, dispatch]);
+
+  useEffect(() => {
+    const newSocket = io();
+    setSocket(newSocket);
+
+    newSocket.on('newMessage', (message) => {
+      dispatch(addMessage(message));
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, [dispatch]);
 
   const handleChannelClick = (channelId) => {
     setActiveChannelId(channelId);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const handleMessageChange = (e) => {
+    setNewMessage(e.target.value);
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (newMessage.trim() === '') return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username');
+      console.log(username);
+      const messageData = {
+        body: newMessage,
+        channelId: activeChannelId,
+        username,
+      };
+      await axios.post('/api/v1/messages', messageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   return (
@@ -44,7 +120,10 @@ const Chat = () => {
               <a className='navbar-brand' href='/'>
                 Hexlet Chat
               </a>
-              <button type='button' className='btn btn-primary'>
+              <button
+                onClick={handleLogout}
+                type='button'
+                className='btn btn-primary'>
                 Выйти
               </button>
             </div>
@@ -103,20 +182,34 @@ const Chat = () => {
                           'general'}
                       </b>
                     </p>
-                    <span className='text-muted'>0 сообщений</span>
+                    <span className='text-muted'>
+                      {messages && `${messages.length} сообщений`}
+                    </span>
                   </div>
                   <div
                     id='messages-box'
-                    className='chat-messages overflow-auto px-5'></div>
+                    className='chat-messages overflow-auto px-5'>
+                    {messages &&
+                      messages.map((message) => (
+                        <div key={message.id} className='text-break mb-2'>
+                          <b>{message.username}: </b>
+                          {message.body}
+                        </div>
+                      ))}
+                  </div>
                   <div className='mt-auto px-5 py-3'>
-                    <form noValidate='' className='py-1 border rounded-2'>
+                    <form
+                      onSubmit={handleSendMessage}
+                      noValidate=''
+                      className='py-1 border rounded-2'>
                       <div className='input-group has-validation'>
                         <input
                           name='body'
                           aria-label='Новое сообщение'
                           placeholder='Введите сообщение...'
                           className='border-0 p-0 ps-2 form-control'
-                          value=''
+                          value={newMessage}
+                          onChange={(e) => handleMessageChange(e)}
                         />
                         <button
                           type='submit'
