@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { store } from '../app/store';
 import LoginPage from './LoginPage.jsx';
 import NotFound from './NotFound.jsx';
@@ -25,6 +27,8 @@ const App = () => {
           />
           <Route path='/signup' element={<SignUpPage />} />
         </Routes>
+
+        <ToastContainer position='top-right' autoClose={3000} />
       </BrowserRouter>
     </Provider>
   );
