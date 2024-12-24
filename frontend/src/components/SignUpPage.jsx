@@ -10,7 +10,7 @@ const SignUpPage = () => {
     confirmPassword: '',
   });
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize hook for navigation
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,23 +19,36 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    const { username, password, confirmPassword } = formData;
+    if (username.length < 3 || username.length > 20) {
+      setError('Имя пользователя должно быть от 3 до 20 символов.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Пароль должен быть не менее 6 символов.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Пароли должны совпадать.');
       return;
     }
 
     try {
       const response = await axios.post('/api/v1/signup', {
-        username: formData.username,
-        password: formData.password,
+        username,
+        password,
       });
-      console.log(response.data);
-      localStorage.setItem('token', response.data.token); // Store the token in localStorage
-      navigate('/'); // Navigate to the homepage or login page after successful signup
+
+      localStorage.setItem('token', response.data.token);
+      navigate('/');
     } catch (err) {
-      console.error(err);
-      setError('Signup failed. Please try again.');
+      if (err.response?.status === 409) {
+        setError('Пользователь с таким именем уже существует.');
+      } else {
+        setError('Ошибка регистрации. Пожалуйста, попробуйте ещё раз.');
+      }
     }
   };
 
