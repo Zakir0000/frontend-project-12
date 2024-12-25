@@ -6,9 +6,11 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { setChannels } from '../features/chatSlice';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.chat.channels);
 
@@ -18,13 +20,13 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
     },
     validationSchema: Yup.object({
       channelName: Yup.string()
-        .min(3, 'От 3 до 20 символов')
-        .max(20, 'От 3 до 20 символов')
+        .min(3, t('errors.channelNameError'))
+        .max(20, t('errors.channelNameError'))
         .notOneOf(
           channels.map((channel) => channel.name),
-          'должно быть уникальным',
+          t('errors.uniqueError'),
         )
-        .required('имя канала обязательно'),
+        .required(t('errors.channelNameRequired')),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -37,10 +39,9 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
         const newChannel = response.data;
         dispatch(setChannels([...channels, newChannel]));
         dispatch(setActiveChannelId(newChannel.id));
-        toast.success('Канал создан!');
+        toast.success(t('channel.channelCreated'));
         onHide();
       } catch (error) {
-        taskCompleted.error('Создать канал не получилось. Попробуй ещё разок.');
         console.error('Failed to create channel:', error);
       } finally {
         setSubmitting(false);
@@ -51,16 +52,16 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Добавить канал</Modal.Title>
+        <Modal.Title>{t('channel.addChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group controlId='channelName'>
-            <Form.Label>Имя канала</Form.Label>
+            <Form.Label>{t('channel.channelName')}</Form.Label>
             <Form.Control
               type='text'
               name='channelName'
-              placeholder='введи имя канала'
+              placeholder={t('channel.channelPlaceholderAdd')}
               value={formik.values.channelName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -74,13 +75,13 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
           </Form.Group>
           <div className='mt-3 d-flex justify-content-end'>
             <Button variant='secondary' onClick={onHide} className='me-2'>
-              Отменить
+              {t('cancel')}
             </Button>
             <Button
               variant='primary'
               type='submit'
               disabled={formik.isSubmitting}>
-              Отправить
+              {t('send')}
             </Button>
           </div>
         </Form>

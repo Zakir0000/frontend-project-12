@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import hook for navigation
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import avatar from '../assets/avatar_1.jpg';
+import { useTranslation } from 'react-i18next';
 
 const SignUpPage = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -23,15 +25,15 @@ const SignUpPage = () => {
 
     const { username, password, confirmPassword } = formData;
     if (username.length < 3 || username.length > 20) {
-      setError('Имя пользователя должно быть от 3 до 20 символов.');
+      setError(t('errors.nameError'));
       return;
     }
     if (password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов.');
+      setError(t('errors.passwordError'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Пароли должны совпадать.');
+      setError(t('errors.confirmError'));
       return;
     }
 
@@ -45,9 +47,9 @@ const SignUpPage = () => {
       navigate('/');
     } catch (err) {
       if (err.response?.status === 409) {
-        setError('Пользователь с таким именем уже существует.');
+        setError(t('errors.error409'));
       } else {
-        setError('Ошибка регистрации. Пожалуйста, попробуйте ещё раз.');
+        setError(t('errors.regError'));
       }
     }
   };
@@ -57,7 +59,7 @@ const SignUpPage = () => {
       <nav className='shadow-sm navbar navbar-expand-lg navbar-light bg-white'>
         <div className='container'>
           <a className='navbar-brand' href='/'>
-            Hexlet Chat
+            {t('title')}
           </a>
         </div>
       </nav>
@@ -74,7 +76,7 @@ const SignUpPage = () => {
                   />
                 </div>
                 <form className='w-50' onSubmit={handleSubmit}>
-                  <h1 className='text-center mb-4'>Регистрация</h1>
+                  <h1 className='text-center mb-4'>{t('registration')}</h1>
                   <div className='form-floating mb-3'>
                     <input
                       placeholder='От 3 до 20 символов'
@@ -87,7 +89,7 @@ const SignUpPage = () => {
                       onChange={handleChange}
                     />
                     <label className='form-label' htmlFor='username'>
-                      Имя пользователя
+                      {t('username')}
                     </label>
                   </div>
                   <div className='form-floating mb-3'>
@@ -104,7 +106,7 @@ const SignUpPage = () => {
                       onChange={handleChange}
                     />
                     <label className='form-label' htmlFor='password'>
-                      Пароль
+                      {t('password')}
                     </label>
                   </div>
                   <div className='form-floating mb-4'>
@@ -120,14 +122,14 @@ const SignUpPage = () => {
                       onChange={handleChange}
                     />
                     <label className='form-label' htmlFor='confirmPassword'>
-                      Подтвердите пароль
+                      {t('confirmPassword')}
                     </label>
                   </div>
                   {error && <div className='text-danger mb-3'>{error}</div>}
                   <button
                     type='submit'
                     className='w-100 btn btn-outline-primary'>
-                    Зарегистрироваться
+                    {t('toRegistration')}
                   </button>
                 </form>
               </div>

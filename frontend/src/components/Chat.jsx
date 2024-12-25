@@ -11,8 +11,11 @@ import axiosInstance from '../utils/axiosInstance';
 import initializeSocket from '../utils/socket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
+import { useTranslation } from 'react-i18next';
 
 const Chat = () => {
+  const { t } = useTranslation();
+
   const channels = useSelector((state) => state.chat.channels);
   const messages = useSelector((state) => state.chat.messages);
   const activeChannelId = useSelector((state) => state.chat.activeChannelId);
@@ -32,7 +35,6 @@ const Chat = () => {
           dispatch(setActiveChannelId(response.data[0].id));
         }
       } catch (error) {
-        console.error('Failed to fetch channels:', error);
         navigate('/login');
       }
     };
@@ -88,6 +90,9 @@ const Chat = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
+  console.log(t('counts.count', { count: 1 })); // Should output "1 message"
+  console.log(t('counts.count', { count: 5 })); // Should output "5 messages"
+  console.log(t('counts.count', { count: 0 })); // Should output "0 messages"
 
   return (
     <div className='h-100 bg-light'>
@@ -96,13 +101,13 @@ const Chat = () => {
           <nav className='navbar navbar-light bg-white shadow-sm'>
             <div className='container'>
               <a className='navbar-brand' href='/'>
-                Hexlet Chat
+                {t('title')}
               </a>
               <button
                 onClick={handleLogout}
                 type='button'
                 className='btn btn-primary'>
-                Выйти
+                {t('logout')}
               </button>
             </div>
           </nav>
@@ -119,7 +124,10 @@ const Chat = () => {
                     </b>
                   </p>
                   <span className='text-muted'>
-                    {messages && `${messages.length} сообщений`}
+                    {messages &&
+                      t('counts.count', {
+                        count: messages.length,
+                      })}
                   </span>
                 </div>
                 <MessagesBox messages={messages} />
@@ -131,10 +139,10 @@ const Chat = () => {
                       className='form-control'
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder='Введите сообщение...'
+                      placeholder={t('enterMessage')}
                     />
                     <button type='submit' className='btn btn-primary'>
-                      Отправить
+                      {t('send')}
                     </button>
                   </div>
                 </form>

@@ -8,8 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import routes from '../routes';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [generalError, setGeneralError] = useState(null);
@@ -20,10 +22,10 @@ const LoginPage = () => {
       password: '',
     },
     validationSchema: Yup.object({
-      username: Yup.string().required('Имя пользователя обязательно'),
+      username: Yup.string().required(t('errors.nameReq')),
       password: Yup.string()
-        .required('Пароль обязателен')
-        .min(5, 'Пароль должен содержать не менее 5 символов'),
+        .required(t('errors.passwordReq'))
+        .min(5, t('errors.passwordError5')),
     }),
 
     onSubmit: async (values, { setSubmitting, setErrors }) => {
@@ -37,9 +39,9 @@ const LoginPage = () => {
         navigate('/');
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          setGeneralError('Неверное имя пользователя или пароль');
+          setGeneralError(t('errors.generalErr'));
         } else {
-          setGeneralError('Произошла ошибка. Попробуйте снова.');
+          setGeneralError(t('errors.errorTryAgain'));
         }
       } finally {
         setSubmitting(false);
@@ -52,7 +54,7 @@ const LoginPage = () => {
       <nav className='shadow-sm navbar navbar-expand-lg navbar-light bg-white'>
         <div className='container'>
           <a className='navbar-brand' href='/'>
-            Hexlet Chat
+            {t('title')}
           </a>
         </div>
       </nav>
@@ -71,15 +73,15 @@ const LoginPage = () => {
                 <Form
                   onSubmit={formik.handleSubmit}
                   className='col-12 col-md-6 mt-3 mt-md-0'>
-                  <h1 className='text-center mb-4'>Войти</h1>
+                  <h1 className='text-center mb-4'>{t('enter')}</h1>
 
                   <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='username'>Ваш ник</Form.Label>
+                    <Form.Label htmlFor='username'>{t('nick')}</Form.Label>
                     <Form.Control
                       type='text'
                       name='username'
                       id='username'
-                      placeholder='Ваш ник'
+                      placeholder={t('nick')}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
@@ -92,12 +94,12 @@ const LoginPage = () => {
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='password'>Пароль</Form.Label>
+                    <Form.Label htmlFor='password'>{t('password')}</Form.Label>
                     <Form.Control
                       type='password'
                       name='password'
                       id='password'
-                      placeholder='Пароль'
+                      placeholder={t('password')}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
@@ -119,13 +121,14 @@ const LoginPage = () => {
                     className='w-100'
                     variant='outline-primary'
                     disabled={formik.isSubmitting}>
-                    Войти
+                    {t('enter')}
                   </Button>
                 </Form>
               </div>
               <div className='card-footer p-4'>
                 <div className='text-center'>
-                  <span>Нет аккаунта?</span> <a href='/signup'>Регистрация</a>
+                  <span>{t('noAccount')}?</span>{' '}
+                  <a href='/signup'>{t('registration')}</a>
                 </div>
               </div>
             </div>

@@ -10,8 +10,10 @@ import {
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 const ChannelItem = ({ channel }) => {
+  const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState(channel.name);
@@ -38,9 +40,9 @@ const ChannelItem = ({ channel }) => {
       });
 
       dispatch(removeChannel(channel.id));
-      toast.success(`Канал удалён`);
+      toast.success(t('channel.channelDeleted'));
     } catch (error) {
-      toast.error('Канал удалён');
+      toast.error(t('channel.channelDeleted'));
     } finally {
       setLoading(false);
       setShowDeleteModal(false);
@@ -64,9 +66,9 @@ const ChannelItem = ({ channel }) => {
       );
       dispatch(setChannels(updatedChannels));
 
-      toast.success('канал переименован');
+      toast.success(t('channel.channelRenamed'));
     } catch (error) {
-      toast.error('Error renaming channel');
+      toast.error(t('channel.channelRenamed'));
     } finally {
       setLoading(false);
       setShowRenameModal(false);
@@ -107,10 +109,10 @@ const ChannelItem = ({ channel }) => {
                 {!isProtectedChannel && (
                   <>
                     <Dropdown.Item onClick={() => setShowDeleteModal(true)}>
-                      Удалить
+                      {t('delete')}
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => setShowRenameModal(true)}>
-                      Переименовать
+                      {t('rename')}
                     </Dropdown.Item>
                   </>
                 )}
@@ -123,21 +125,21 @@ const ChannelItem = ({ channel }) => {
             show={showDeleteModal}
             onHide={() => setShowDeleteModal(false)}>
             <Modal.Header closeButton>
-              <Modal.Title>Удалить канал</Modal.Title>
+              <Modal.Title>{t('channel.channelDelete')}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Уверены?</Modal.Body>
+            <Modal.Body>{t('confirmation')}?</Modal.Body>
             <Modal.Footer>
               <Button
                 variant='secondary'
                 onClick={() => setShowDeleteModal(false)}
                 disabled={loading}>
-                Отменить
+                {t('cancel')}
               </Button>
               <Button
                 variant='danger'
                 onClick={handleDeleteChannel}
                 disabled={loading}>
-                {loading ? 'Удаление...' : 'Удалить'}
+                {loading ? `${t('deleting')}` : `${t('delete')}`}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -147,7 +149,7 @@ const ChannelItem = ({ channel }) => {
             show={showRenameModal}
             onHide={() => setShowRenameModal(false)}>
             <Modal.Header closeButton>
-              <Modal.Title>Переименовать канал</Modal.Title>
+              <Modal.Title>{t('channel.channelRename')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form.Control
@@ -164,13 +166,13 @@ const ChannelItem = ({ channel }) => {
                 variant='secondary'
                 onClick={() => setShowRenameModal(false)}
                 disabled={loading}>
-                Отменить
+                {t('cancel')}
               </Button>
               <Button
                 variant='primary'
                 onClick={handleRenameChannel}
                 disabled={loading}>
-                {loading ? 'Сохранение...' : 'Сохранить'}
+                {loading ? t('saving') : t('save')}
               </Button>
             </Modal.Footer>
           </Modal>
