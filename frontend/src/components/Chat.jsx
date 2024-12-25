@@ -15,8 +15,13 @@ import { useTranslation } from 'react-i18next';
 import Filter from 'leo-profanity';
 
 const Chat = () => {
-  const { t } = useTranslation();
-  Filter.loadDictionary('ru');
+  const { t, i18n } = useTranslation();
+  if (i18n.language === 'en') {
+    Filter.loadDictionary('en');
+  } else {
+    Filter.loadDictionary('ru');
+  }
+
   const channels = useSelector((state) => state.chat.channels);
   const messages = useSelector((state) => state.chat.messages);
   const activeChannelId = useSelector((state) => state.chat.activeChannelId);

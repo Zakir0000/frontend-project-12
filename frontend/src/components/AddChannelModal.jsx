@@ -31,6 +31,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       const filteredChannelName = Filter.clean(values.channelName);
+      console.log(filteredChannelName);
       try {
         const token = localStorage.getItem('token');
         const response = await axios.post(
