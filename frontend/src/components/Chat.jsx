@@ -12,10 +12,11 @@ import initializeSocket from '../utils/socket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
 import { useTranslation } from 'react-i18next';
+import Filter from 'leo-profanity';
 
 const Chat = () => {
   const { t } = useTranslation();
-
+  Filter.loadDictionary('ru');
   const channels = useSelector((state) => state.chat.channels);
   const messages = useSelector((state) => state.chat.messages);
   const activeChannelId = useSelector((state) => state.chat.activeChannelId);
@@ -72,10 +73,13 @@ const Chat = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
+
+    const filteredMessage = Filter.clean(newMessage);
+
     try {
       const username = localStorage.getItem('username');
       const messageData = {
-        body: newMessage,
+        body: filteredMessage,
         channelId: activeChannelId,
         username,
       };

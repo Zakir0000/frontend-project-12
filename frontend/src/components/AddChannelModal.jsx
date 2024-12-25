@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setChannels } from '../features/chatSlice';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import Filter from 'leo-profanity';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
@@ -29,11 +30,12 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
         .required(t('errors.channelNameRequired')),
     }),
     onSubmit: async (values, { setSubmitting }) => {
+      const filteredChannelName = Filter.clean(values.channelName);
       try {
         const token = localStorage.getItem('token');
         const response = await axios.post(
           '/api/v1/channels',
-          { name: values.channelName },
+          { name: filteredChannelName },
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const newChannel = response.data;

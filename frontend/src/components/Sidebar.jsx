@@ -1,6 +1,5 @@
 // components/Sidebar.js
 import React, { useState } from 'react';
-import cn from 'classnames';
 import AddChannelModal from './AddChannelModal';
 import ChannelItem from './ChannelItem';
 import { useSelector } from 'react-redux';

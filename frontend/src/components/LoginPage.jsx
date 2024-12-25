@@ -105,8 +105,7 @@ const LoginPage = () => {
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
                       isInvalid={
-                        (formik.touched.password && !!formik.errors.password) ||
-                        (!!formik.errors.username && formik.touched.username)
+                        formik.touched.password && !!formik.errors.password
                       }
                     />
                   </Form.Group>
