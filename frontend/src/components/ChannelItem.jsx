@@ -42,7 +42,7 @@ const ChannelItem = ({ channel }) => {
       dispatch(removeChannel(channel.id));
       toast.success(t('channel.channelDeleted'));
     } catch (error) {
-      toast.error(t('channel.channelDeleted'));
+      toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
       setShowDeleteModal(false);
@@ -68,7 +68,7 @@ const ChannelItem = ({ channel }) => {
 
       toast.success(t('channel.channelRenamed'));
     } catch (error) {
-      toast.error(t('channel.channelRenamed'));
+      toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
       setShowRenameModal(false);

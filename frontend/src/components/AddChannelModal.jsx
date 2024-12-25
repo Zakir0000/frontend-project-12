@@ -43,6 +43,13 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
         onHide();
       } catch (error) {
         console.error('Failed to create channel:', error);
+        if (!error.response) {
+          toast.error(t('errors.noNetwork'));
+        } else if (error.response.status === 500) {
+          toast.error(t('errors.serverError'));
+        } else {
+          toast.error(t('errors.errorTryAgain'));
+        }
       } finally {
         setSubmitting(false);
       }

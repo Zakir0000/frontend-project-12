@@ -25,7 +25,11 @@ export default {
     rename: 'Rename',
     confirmation: 'Are you sure?',
     errors: {
+      noNetwork: 'No network connection. Please check your internet.',
+      serverError: 'Server error. Please try again later.',
+      invalidCredentials: 'Incorrect username or password',
       nameError: 'The username must be between 3 and 20 characters.',
+      connection: 'Connection Error',
       nameReq: 'Username is required.',
       channelNameError: 'Channel name must be between 3 and 20 characters.',
       uniqueError: 'The name must be unique.',

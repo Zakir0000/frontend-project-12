@@ -90,9 +90,6 @@ const Chat = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
-  console.log(t('counts.count', { count: 1 })); // Should output "1 message"
-  console.log(t('counts.count', { count: 5 })); // Should output "5 messages"
-  console.log(t('counts.count', { count: 0 })); // Should output "0 messages"
 
   return (
     <div className='h-100 bg-light'>

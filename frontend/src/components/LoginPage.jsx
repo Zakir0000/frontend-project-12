@@ -9,12 +9,14 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import routes from '../routes';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [generalError, setGeneralError] = useState(null);
+  const [error, setError] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -29,7 +31,6 @@ const LoginPage = () => {
     }),
 
     onSubmit: async (values, { setSubmitting, setErrors }) => {
-      setGeneralError(null);
       try {
         const response = await axios.post(routes.loginPath(), values);
         dispatch(login(response.data));
@@ -39,9 +40,12 @@ const LoginPage = () => {
         navigate('/');
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          setGeneralError(t('errors.generalErr'));
+          setErrors({
+            username: t('errors.invalidCredentials'),
+          });
+          setError(t('errors.invalidCredentials'));
         } else {
-          setGeneralError(t('errors.errorTryAgain'));
+          toast.error(t('errors.errorTryAgain'));
         }
       } finally {
         setSubmitting(false);
@@ -89,9 +93,6 @@ const LoginPage = () => {
                         !!formik.errors.username && formik.touched.username
                       }
                     />
-                    <Form.Control.Feedback type='invalid'>
-                      {formik.errors.username}
-                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className='mb-3'>
                     <Form.Label htmlFor='password'>{t('password')}</Form.Label>
@@ -104,18 +105,12 @@ const LoginPage = () => {
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
                       isInvalid={
-                        formik.touched.password && !!formik.errors.password
+                        (formik.touched.password && !!formik.errors.password) ||
+                        (!!formik.errors.username && formik.touched.username)
                       }
                     />
-                    <Form.Control.Feedback type='invalid'>
-                      {formik.errors.password}
-                    </Form.Control.Feedback>
-                    {generalError && (
-                      <Alert variant='danger' className='text-center'>
-                        {generalError}
-                      </Alert>
-                    )}
                   </Form.Group>
+                  {error && <Alert variant='danger'>{error}</Alert>}
                   <Button
                     type='submit'
                     className='w-100'
