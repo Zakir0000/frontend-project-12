@@ -12,7 +12,7 @@ const init = async () => {
   const i18n = i18next.createInstance();
 
   await i18n.use(initReactI18next).init({
-    debug: true,
+    debug: process.env.NODE_ENV === 'development',
     resources,
     fallbackLng: 'ru',
     lng: 'ru',
