@@ -36,32 +36,16 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='*' element={<NotFound />} />
-          <Route
-            path='/login'
-            element={
-              <ErrorBoundary>
-                <LoginPage />
-              </ErrorBoundary>
-            }
-          />
+          <Route path='/login' element={<LoginPage />} />
           <Route
             path='/'
             element={
               <PrivateRoute>
-                <ErrorBoundary>
-                  <Chat />
-                </ErrorBoundary>
+                <Chat />
               </PrivateRoute>
             }
           />
-          <Route
-            path='/signup'
-            element={
-              <ErrorBoundary>
-                <SignUpPage />
-              </ErrorBoundary>
-            }
-          />
+          <Route path='/signup' element={<SignUpPage />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer position='top-right' autoClose={3000} />
