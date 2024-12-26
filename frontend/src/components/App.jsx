@@ -12,42 +12,30 @@ import SignUpPage from './SignUpPage.jsx';
 import PrivateRoute from './PrivateRoute';
 
 const App = () => {
-  const user = useSelector((state) => state.auth.user);
-
   const rollbarConfig = {
     accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
-    captureUncaught: true,
-    captureUnhandledRejections: true,
     environment: process.env.NODE_ENV || 'production',
-    server: {
-      root: '',
-      branch: 'main',
-    },
-    code_version: '0.13.7',
-    payload: {
-      person: {
-        person: user ? user : null,
-      },
-    },
   };
   const rollbar = new Rollbar(rollbarConfig);
   return (
     <RollbarProvider instance={rollbar}>
-      <BrowserRouter>
-        <Routes>
-          <Route path='*' element={<NotFound />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route
-            path='/'
-            element={
-              <PrivateRoute>
-                <Chat />
-              </PrivateRoute>
-            }
-          />
-          <Route path='/signup' element={<SignUpPage />} />
-        </Routes>
-      </BrowserRouter>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            <Route path='*' element={<NotFound />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route
+              path='/'
+              element={
+                <PrivateRoute>
+                  <Chat />
+                </PrivateRoute>
+              }
+            />
+            <Route path='/signup' element={<SignUpPage />} />
+          </Routes>
+        </BrowserRouter>
+      </ErrorBoundary>
       <ToastContainer position='top-right' autoClose={3000} />
     </RollbarProvider>
   );
