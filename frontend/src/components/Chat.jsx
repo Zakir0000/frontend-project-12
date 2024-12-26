@@ -41,7 +41,9 @@ const Chat = () => {
           dispatch(setActiveChannelId(response.data[0].id));
         }
       } catch (error) {
-        navigate('/login');
+        console.error('Failed to fetch channels:', error);
+
+        throw new Error('Error fetching channels');
       }
     };
     fetchChannels();
@@ -59,6 +61,7 @@ const Chat = () => {
           dispatch(setMessages(channelMessages));
         } catch (error) {
           console.error('Failed to fetch messages:', error);
+          throw new Error('Error fetching messages');
         }
       };
       fetchMessages();
@@ -92,6 +95,8 @@ const Chat = () => {
       setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
+
+      throw new Error('Error sending message');
     }
   };
 
