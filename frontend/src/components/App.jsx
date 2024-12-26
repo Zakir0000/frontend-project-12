@@ -16,8 +16,10 @@ const rollbarConfig = {
 };
 
 const App = () => {
-  const rollbar = React.useMemo(() => new Rollbar(rollbarConfig), []);
+  const rollbar = new Rollbar(rollbarConfig);
 
+  console.error('Intentional Console Error');
+  rollbar.error('Intentional Rollbar Error');
   return (
     <RollbarProvider instance={rollbar}>
       <BrowserRouter>
