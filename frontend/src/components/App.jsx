@@ -26,46 +26,28 @@ const App = () => {
     code_version: '0.13.7',
     payload: {
       person: {
-        person: user ? { id: user.id, username: user.username } : null,
+        person: user ? { id: user.id, username: user.user } : null,
       },
     },
   };
   const rollbar = new Rollbar(rollbarConfig);
   return (
-    <RollbarProvider instance={rollbar}>
-      <BrowserRouter>
-        <Routes>
-          <Route path='*' element={<NotFound />} />
-          <Route
-            path='/login'
-            element={
-              <ErrorBoundary>
-                <LoginPage />
-              </ErrorBoundary>
-            }
-          />
-          <Route
-            path='/'
-            element={
-              <PrivateRoute>
-                <ErrorBoundary>
-                  <Chat />
-                </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/signup'
-            element={
-              <ErrorBoundary>
-                <SignUpPage />
-              </ErrorBoundary>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+        <Route path='*' element={<NotFound />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route
+          path='/'
+          element={
+            <PrivateRoute>
+              <Chat />
+            </PrivateRoute>
+          }
+        />
+        <Route path='/signup' element={<SignUpPage />} />
+      </Routes>
       <ToastContainer position='top-right' autoClose={3000} />
-    </RollbarProvider>
+    </BrowserRouter>
   );
 };
 

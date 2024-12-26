@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import App from './components/App';
 import resources from './locales/index.js';
 import { store } from './app/store';
+import React from 'react';
 
 const init = async () => {
   const i18n = i18next.createInstance();
