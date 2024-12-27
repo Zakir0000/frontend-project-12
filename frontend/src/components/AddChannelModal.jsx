@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -7,10 +7,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setChannels } from '../features/chatSlice';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import Filter from 'leo-profanity';
+import filter from 'leo-profanity';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
+  const filterProfanity = (text) => {
+    return filter.clean(text);
+  };
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.chat.channels);
@@ -29,10 +33,10 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
         )
         .required(t('errors.channelNameRequired')),
     }),
-    onSubmit: async (values, { setSubmitting }) => {
-      const filteredChannelName = Filter.clean(values.channelName);
-      console.log(filteredChannelName);
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
+        const filteredChannelName = filterProfanity(values.channelName);
+
         const token = localStorage.getItem('token');
         const response = await axios.post(
           '/api/v1/channels',
@@ -42,7 +46,10 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
         const newChannel = response.data;
         dispatch(setChannels([...channels, newChannel]));
         dispatch(setActiveChannelId(newChannel.id));
-        toast.success(t('channel.channelCreated'));
+        toast.success(t('channel.channelCreated'), {
+          autoClose: 5000,
+        });
+        resetForm();
         onHide();
       } catch (error) {
         console.error('Failed to create channel:', error);
@@ -60,18 +67,20 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
   });
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal centered show={show} onHide={onHide}>
       <Modal.Header closeButton>
         <Modal.Title>{t('channel.addChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
+          <Form.Label className='visually-hidden'>
+            {t('channel.channelName')}
+          </Form.Label>
           <Form.Group controlId='channelName'>
-            <Form.Label>{t('channel.channelName')}</Form.Label>
             <Form.Control
+              autoFocus
               type='text'
               name='channelName'
-              placeholder={t('channel.channelPlaceholderAdd')}
               value={formik.values.channelName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -79,6 +88,9 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
                 formik.touched.channelName && !!formik.errors.channelName
               }
             />
+            <label className='visually-hidden' htmlFor='channelName'>
+              Имя канала
+            </label>
             <Form.Control.Feedback type='invalid'>
               {formik.errors.channelName}
             </Form.Control.Feedback>

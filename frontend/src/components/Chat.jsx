@@ -12,15 +12,16 @@ import initializeSocket from '../utils/socket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
 import { useTranslation } from 'react-i18next';
-import Filter from 'leo-profanity';
+import filter from 'leo-profanity';
 
 const Chat = () => {
   const { t, i18n } = useTranslation();
-  if (i18n.language === 'en') {
-    Filter.loadDictionary('en');
-  } else {
-    Filter.loadDictionary('ru');
-  }
+  filter.loadDictionary('en');
+
+  const filterProfanity = (text) => {
+    const filteredText = filter.clean(text);
+    return filteredText;
+  };
 
   const channels = useSelector((state) => state.chat.channels);
   const messages = useSelector((state) => state.chat.messages);
@@ -82,7 +83,7 @@ const Chat = () => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const filteredMessage = Filter.clean(newMessage);
+    const filteredMessage = filterProfanity(newMessage);
 
     try {
       const username = localStorage.getItem('username');
@@ -147,13 +148,17 @@ const Chat = () => {
                   className='mt-auto px-5 py-3'>
                   <div className='input-group'>
                     <input
+                      id='name'
                       className='form-control'
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={t('enterMessage')}
+                      aria-label='Новое сообщение'
                     />
+
                     <button type='submit' className='btn btn-primary'>
                       {t('send')}
+                      <span className='visually-hidden'>Отправить</span>
                     </button>
                   </div>
                 </form>

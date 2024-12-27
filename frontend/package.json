@@ -61,5 +61,8 @@
   },
   "overrides": {
     "autoprefixer": "10.4.5"
+  },
+  "devDependencies": {
+    "@types/leo-profanity": "^1.5.4"
   }
 }

@@ -25,12 +25,10 @@ const LoginPage = () => {
     },
     validationSchema: Yup.object({
       username: Yup.string().required(t('errors.nameReq')),
-      password: Yup.string()
-        .required(t('errors.passwordReq'))
-        .min(5, t('errors.passwordError5')),
+      password: Yup.string().required(t('errors.passwordReq')),
     }),
 
-    onSubmit: async (values, { setSubmitting, setErrors }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         const response = await axios.post(routes.loginPath(), values);
         dispatch(login(response.data));
@@ -39,12 +37,10 @@ const LoginPage = () => {
         localStorage.setItem('username', response.data.username);
         navigate('/');
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          setErrors({
-            username: t('errors.invalidCredentials'),
-          });
+        if (error.response?.status === 401) {
           setError(t('errors.invalidCredentials'));
         } else {
+          setError(t('errrors.errorTryAgain'));
           toast.error(t('errors.errorTryAgain'));
         }
       } finally {
@@ -89,10 +85,11 @@ const LoginPage = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
-                      isInvalid={
-                        !!formik.errors.username && formik.touched.username
-                      }
+                      isInvalid={error}
                     />
+                    <Form.Control.Feedback type='invalid'>
+                      {formik.errors.username}
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className='mb-3'>
                     <Form.Label htmlFor='password'>{t('password')}</Form.Label>
@@ -104,10 +101,11 @@ const LoginPage = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
-                      isInvalid={
-                        formik.touched.password && !!formik.errors.password
-                      }
+                      isInvalid={error}
                     />
+                    <Form.Control.Feedback type='invalid'>
+                      {formik.errors.password}
+                    </Form.Control.Feedback>
                   </Form.Group>
                   {error && <Alert variant='danger'>{error}</Alert>}
                   <Button

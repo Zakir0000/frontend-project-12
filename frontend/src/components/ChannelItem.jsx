@@ -26,8 +26,9 @@ const ChannelItem = ({ channel }) => {
   const isProtectedChannel = ['general', 'random'].includes(channel.name);
 
   useEffect(() => {
-    if (showRenameModal) {
+    if (showRenameModal && inputRef.current) {
       inputRef.current?.focus();
+      inputRef.current.select();
     }
   }, [showRenameModal]);
 
@@ -66,7 +67,9 @@ const ChannelItem = ({ channel }) => {
       );
       dispatch(setChannels(updatedChannels));
 
-      toast.success(t('channel.channelRenamed'));
+      toast.success(t('channel.channelRenamed'), {
+        autoClose: 5000,
+      });
     } catch (error) {
       toast.error(t('errors.connection'));
     } finally {
@@ -84,7 +87,7 @@ const ChannelItem = ({ channel }) => {
   return (
     <>
       <li key={channel.id} className='nav-item w-100'>
-        <div role='group' className='d-flex dropdown btn-group'>
+        <div className='d-flex dropdown btn-group'>
           <button
             type='button'
             className={cn(
@@ -97,6 +100,7 @@ const ChannelItem = ({ channel }) => {
             <span className='me-1'>#</span>
             {channel.name}
           </button>
+
           {!isProtectedChannel && (
             <Dropdown>
               <Dropdown.Toggle
@@ -104,7 +108,10 @@ const ChannelItem = ({ channel }) => {
                   'w-100 border-top-right text-start btn ',
                   { 'btn-secondary': channel.id === activeChannelId },
                   { 'btn-light': channel.id !== activeChannelId },
-                )}></Dropdown.Toggle>
+                )}>
+                <span className='visually-hidden'>Управление каналом</span>
+              </Dropdown.Toggle>
+
               <Dropdown.Menu>
                 {!isProtectedChannel && (
                   <>
@@ -122,6 +129,7 @@ const ChannelItem = ({ channel }) => {
 
           {/* Delete Confirmation Modal */}
           <Modal
+            centered
             show={showDeleteModal}
             onHide={() => setShowDeleteModal(false)}>
             <Modal.Header closeButton>
@@ -146,6 +154,7 @@ const ChannelItem = ({ channel }) => {
 
           {/* Rename Channel Modal */}
           <Modal
+            centered
             show={showRenameModal}
             onHide={() => setShowRenameModal(false)}>
             <Modal.Header closeButton>
@@ -153,6 +162,7 @@ const ChannelItem = ({ channel }) => {
             </Modal.Header>
             <Modal.Body>
               <Form.Control
+                name='name'
                 ref={inputRef}
                 type='text'
                 value={newChannelName}
@@ -160,6 +170,9 @@ const ChannelItem = ({ channel }) => {
                 onKeyDown={handleKeyPress}
                 disabled={loading}
               />
+              <label className='visually-hidden' htmlFor='name'>
+                Имя канала
+              </label>
             </Modal.Body>
             <Modal.Footer>
               <Button
