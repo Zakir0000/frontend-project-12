@@ -2,8 +2,6 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "proxy": "http://localhost:5001",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
     "@rollbar/react": "^0.12.0-beta",
@@ -40,11 +38,6 @@
     "start": "npx start-server -s ./dist",
     "build": "vite build",
     "serve": "vite preview"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
   },
   "browserslist": {
     "production": [

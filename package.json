@@ -1,11 +1,10 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/Zakir0000/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Zakir0000/frontend-project-12/actions)",
-  "main": "src/index.js",
+  "description": "messanger",
   "scripts": {
     "build": "npm run build --prefix frontend",
-    "start": "npx start-server -s ./frontend/dist",
+    "start": "start-server -s ./frontend/dist",
     "test": "playwright test",
     "postinstall": "cd frontend && npm install"
   },
