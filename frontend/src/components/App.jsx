@@ -11,7 +11,7 @@ import SignUpPage from './SignUpPage.jsx';
 import PrivateRoute from './PrivateRoute';
 
 const rollbarConfig = {
-  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
+  accessToken: '60cb77910f474fdcbcb46d23c87f8d20',
   environment: process.env.NODE_ENV || 'production',
 };
 
