@@ -40,7 +40,7 @@ const ChannelItem = ({ channel }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      dispatch(removeChannel(channel.id));
+      dispatch(removeChannel({ id: channel.id }));
       toast.success(t('channel.channelDeleted'));
     } catch (error) {
       toast.error(t('errors.connection'));
@@ -67,9 +67,7 @@ const ChannelItem = ({ channel }) => {
       );
       dispatch(setChannels(updatedChannels));
 
-      toast.success(t('channel.channelRenamed'), {
-        autoClose: 5000,
-      });
+      toast.success(t('channel.channelRenamed'));
     } catch (error) {
       toast.error(t('errors.connection'));
     } finally {
@@ -87,11 +85,11 @@ const ChannelItem = ({ channel }) => {
   return (
     <>
       <li key={channel.id} className='nav-item w-100'>
-        <div className='d-flex dropdown btn-group'>
+        <div role='group' className='d-flex dropdown btn-group'>
           <button
             type='button'
             className={cn(
-              'w-100 rounded-0 text-start btn',
+              'w-100 rounded-0 text-start text-truncate btn',
               { 'btn-secondary': channel.id === activeChannelId },
               { 'btn-light': channel.id !== activeChannelId },
             )}
@@ -105,11 +103,13 @@ const ChannelItem = ({ channel }) => {
             <Dropdown>
               <Dropdown.Toggle
                 className={cn(
-                  'w-100 border-top-right text-start btn ',
+                  'w-100 border-top-right text-start text-truncate btn',
                   { 'btn-secondary': channel.id === activeChannelId },
                   { 'btn-light': channel.id !== activeChannelId },
                 )}>
-                <span className='visually-hidden'>Управление каналом</span>
+                <span className='visually-hidden'>
+                  {t('channel.channelMenegment')}
+                </span>
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
@@ -163,6 +163,7 @@ const ChannelItem = ({ channel }) => {
             <Modal.Body>
               <Form.Control
                 name='name'
+                id='name'
                 ref={inputRef}
                 type='text'
                 value={newChannelName}

@@ -50,6 +50,8 @@ const SignUpPage = () => {
       });
 
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', response.data.username);
+
       dispatch({ type: 'auth/login', payload: { token: response.data.token } });
       navigate('/');
     } catch (err) {
@@ -157,9 +159,6 @@ const SignUpPage = () => {
                     type='submit'
                     className='w-100 btn btn-outline-primary'>
                     {t('toRegistration')}
-                  </button>
-                  <button type='submit' className='visually-hidden'>
-                    general
                   </button>
                 </form>
               </div>

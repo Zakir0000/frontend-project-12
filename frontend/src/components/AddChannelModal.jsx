@@ -65,6 +65,11 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
       }
     },
   });
+  useEffect(() => {
+    if (!show) {
+      formik.resetForm();
+    }
+  }, [show]);
 
   return (
     <Modal centered show={show} onHide={onHide}>
@@ -88,7 +93,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
                 formik.touched.channelName && !!formik.errors.channelName
               }
             />
-            <label className='visually-hidden' htmlFor='channelName'>
+            <label className='visually-hidden' htmlFor='name'>
               Имя канала
             </label>
             <Form.Control.Feedback type='invalid'>

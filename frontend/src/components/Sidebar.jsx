@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 const Sidebar = () => {
   const { t } = useTranslation();
   const channels = useSelector((state) => state.chat.channels);
+
   const [showAddChannelModal, setShowAddChannelModal] = useState(false);
 
   const handleAddChannel = () => {
@@ -35,7 +36,9 @@ const Sidebar = () => {
           <span className='visually-hidden'>+</span>
         </button>
       </div>
-      <ul className='nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block'>
+      <ul
+        id='channels-box'
+        className='nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block'>
         {channels.map((channel) => (
           <ChannelItem key={channel.id} channel={channel} />
         ))}

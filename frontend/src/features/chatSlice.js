@@ -4,60 +4,62 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     channels: [],
-    messages: [],
+    messagesByChannel: {}, // Messages grouped by channel ID
     activeChannelId: null,
   },
   reducers: {
-    setChannels: (state, action) => {
+    setChannels(state, action) {
       state.channels = action.payload;
+    },
+    addChannel(state, action) {
+      const channel = action.payload;
+      state.channels.push(channel);
+      state.messagesByChannel[channel.id] = []; // Initialize message list for the new channel
+    },
+    removeChannel(state, action) {
+      const channelId = action.payload.id;
+      state.channels = state.channels.filter((c) => c.id !== channelId);
+      delete state.messagesByChannel[channelId]; // Remove messages for the deleted channel
 
-      if (!state.activeChannelId && state.channels.length > 0) {
-        const generalChannel = state.channels.find(
-          (channel) => channel.name === 'general',
-        );
-        state.activeChannelId = generalChannel
-          ? generalChannel.id
-          : state.channels[0].id;
-      }
-    },
-    setMessages: (state, action) => {
-      state.messages = action.payload;
-    },
-    setActiveChannelId(state, action) {
-      state.activeChannelId = action.payload;
-    },
-    addMessage: (state, action) => {
-      state.messages.push(action.payload);
-    },
-    removeChannel: (state, action) => {
-      const channelIdToRemove = action.payload;
-      state.channels = state.channels.filter(
-        (channel) => channel.id !== channelIdToRemove,
-      );
-
-      if (state.activeChannelId === channelIdToRemove) {
-        const generalChannel = state.channels.find(
-          (channel) => channel.name === 'general',
-        );
-        state.activeChannelId = generalChannel
-          ? generalChannel.id
-          : state.channels.length > 0
+      // Reset active channel if the deleted channel was active
+      if (state.activeChannelId === channelId) {
+        state.activeChannelId = state.channels.length
           ? state.channels[0].id
           : null;
       }
-      if (state.activeChannelId === null) {
-        state.messages = [];
+    },
+    renameChannel(state, action) {
+      const { id, name } = action.payload;
+      const channel = state.channels.find((c) => c.id === id);
+      if (channel) {
+        channel.name = name;
       }
+    },
+    setMessages(state, action) {
+      const { channelId, messages } = action.payload;
+      state.messagesByChannel[channelId] = messages;
+    },
+    addMessage(state, action) {
+      const message = action.payload;
+      if (!state.messagesByChannel[message.channelId]) {
+        state.messagesByChannel[message.channelId] = [];
+      }
+      state.messagesByChannel[message.channelId].push(message);
+    },
+    setActiveChannelId(state, action) {
+      state.activeChannelId = action.payload;
     },
   },
 });
 
 export const {
   setChannels,
-  setMessages,
-  setActiveChannelId,
-  addMessage,
+  addChannel,
   removeChannel,
+  renameChannel,
+  setMessages,
+  addMessage,
+  setActiveChannelId,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -48,6 +48,7 @@ export default {
         "Но вы можете перейти на <a href='/'>главную страницу</a>",
     },
     channel: {
+      channelMenegment: 'Управление каналом',
       channels: 'Каналы',
       channelCreated: 'Канал создан',
       channelDeleted: 'Канал удалён',

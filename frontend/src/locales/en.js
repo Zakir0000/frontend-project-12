@@ -46,6 +46,7 @@ export default {
       'homepage-link': "But you can go back to the <a href='/'>home page</a>.",
     },
     channel: {
+      channelMenegment: 'Channel menegment',
       channels: 'Channels',
       channelCreated: 'Channel created!',
       channelDeleted: 'Channel deleted.',

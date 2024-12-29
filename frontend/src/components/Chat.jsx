@@ -6,6 +6,9 @@ import {
   setChannels,
   setMessages,
   setActiveChannelId,
+  addChannel,
+  removeChannel,
+  renameChannel,
 } from '../features/chatSlice';
 import axiosInstance from '../utils/axiosInstance';
 import initializeSocket from '../utils/socket';
@@ -15,17 +18,16 @@ import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
 
 const Chat = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   filter.loadDictionary('en');
 
-  const filterProfanity = (text) => {
-    const filteredText = filter.clean(text);
-    return filteredText;
-  };
+  const filterProfanity = (text) => filter.clean(text);
 
   const channels = useSelector((state) => state.chat.channels);
-  const messages = useSelector((state) => state.chat.messages);
   const activeChannelId = useSelector((state) => state.chat.activeChannelId);
+  const messages = useSelector(
+    (state) => state.chat.messagesByChannel[activeChannelId] || [],
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -48,18 +50,25 @@ const Chat = () => {
       }
     };
     fetchChannels();
-  }, [dispatch, navigate]);
+  }, [dispatch]);
 
   // Fetch messages
   useEffect(() => {
     if (activeChannelId) {
       const fetchMessages = async () => {
         try {
-          const response = await axiosInstance.get('/messages');
-          const channelMessages = response.data.filter(
-            (message) => message.channelId === activeChannelId,
+          const response = await axiosInstance.get('/messages').then((res) => {
+            const filteredMessages = res.data.filter(
+              (msg) => msg.channelId === activeChannelId,
+            );
+          });
+
+          dispatch(
+            setMessages({
+              channelId: activeChannelId,
+              messages: filteredMessages,
+            }),
           );
-          dispatch(setMessages(channelMessages));
         } catch (error) {
           console.error('Failed to fetch messages:', error);
           throw new Error('Error fetching messages');
@@ -72,13 +81,26 @@ const Chat = () => {
   // Initialize Socket.IO
   useEffect(() => {
     const newSocket = initializeSocket(dispatch, addMessage);
+
+    newSocket.on('newChannel', (channel) => {
+      dispatch(addChannel(channel));
+    });
+
+    newSocket.on('removeChannel', (payload) => {
+      dispatch(removeChannel(payload));
+    });
+
+    newSocket.on('renameChannel', (payload) => {
+      dispatch(renameChannel(payload));
+    });
+
     setSocket(newSocket);
+
     return () => {
       newSocket.disconnect();
     };
   }, [dispatch]);
 
-  // Message input handlers
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -123,45 +145,47 @@ const Chat = () => {
               </button>
             </div>
           </nav>
-          <div className='container h-100 my-4 rounded shadow'>
-            <div className='row h-100 bg-white'>
+          <div className='container h-100 my-4 rounded shadow overflow-hidden '>
+            <div className='row h-100 bg-white flex-md-row'>
               <Sidebar />
-              <div className='col p-0 h-100 d-flex flex-column'>
-                <div className='bg-light mb-4 p-3 shadow-sm small'>
-                  <p className='m-0'>
-                    <b>
-                      #{' '}
-                      {channels.find((c) => c.id === activeChannelId)?.name ||
-                        'general'}
-                    </b>
-                  </p>
-                  <span className='text-muted'>
-                    {messages &&
-                      t('counts.count', {
-                        count: messages.length,
-                      })}
-                  </span>
-                </div>
-                <MessagesBox messages={messages} />
-                <form
-                  onSubmit={handleSendMessage}
-                  className='mt-auto px-5 py-3'>
-                  <div className='input-group'>
-                    <input
-                      id='name'
-                      className='form-control'
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder={t('enterMessage')}
-                      aria-label='Новое сообщение'
-                    />
-
-                    <button type='submit' className='btn btn-primary'>
-                      {t('send')}
-                      <span className='visually-hidden'>Отправить</span>
-                    </button>
+              <div className='col p-0 h-100'>
+                <div className='d-flex flex-column h-100'>
+                  <div className='bg-light mb-4 p-3 shadow-sm small'>
+                    <p className='m-0'>
+                      <b>
+                        #{' '}
+                        {channels.find((c) => c.id === activeChannelId)?.name ||
+                          'general'}
+                      </b>
+                    </p>
+                    <span className='text-muted'>
+                      {messages &&
+                        t('counts.count', {
+                          count: messages.length,
+                        })}
+                    </span>
                   </div>
-                </form>
+                  <MessagesBox messages={messages} />
+                  <form
+                    onSubmit={handleSendMessage}
+                    className='mt-auto px-5 py-3'>
+                    <div className='input-group'>
+                      <input
+                        id='name'
+                        className='form-control'
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder={t('enterMessage')}
+                        aria-label='Новое сообщение'
+                      />
+
+                      <button type='submit' className='btn btn-primary'>
+                        {t('send')}
+                        <span className='visually-hidden'>Отправить</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
