@@ -1,5 +1,3 @@
-/* eslint-disable functional/no-expression-statement */
-
 import { io } from 'socket.io-client';
 
 const initialSocket = (dispatch, addMessage) => {
