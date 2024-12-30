@@ -1,10 +1,15 @@
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable functional/no-try-statement */
+/* eslint-disable functional/no-conditional-statement */
+/* eslint-disable  functional/no-throw-statement */
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import avatar from '../assets/avatar_1.jpg';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
+import avatar from '../assets/avatar_1.jpg';
 
 const SignUpPage = () => {
   filter.loadDictionary('en');
@@ -64,100 +69,101 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className='d-flex flex-column h-100'>
-      <nav className='shadow-sm navbar navbar-expand-lg navbar-light bg-white'>
-        <div className='container'>
-          <a className='navbar-brand' href='/'>
+    <div className="d-flex flex-column h-100">
+      <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
+        <div className="container">
+          <a className="navbar-brand" href="/">
             {t('title')}
           </a>
         </div>
       </nav>
-      <div className='container-fluid h-100'>
-        <div className='row justify-content-center align-content-center h-100'>
-          <div className='col-12 col-md-8 col-xxl-6'>
-            <div className='card shadow-sm'>
-              <div className='card-body d-flex flex-column flex-md-row justify-content-around align-items-center p-5'>
+      <div className="container-fluid h-100">
+        <div className="row justify-content-center align-content-center h-100">
+          <div className="col-12 col-md-8 col-xxl-6">
+            <div className="card shadow-sm">
+              <div className="card-body d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
                 <div>
                   <img
                     src={avatar}
-                    className='rounded-circle'
-                    alt='Регистрация'
+                    className="rounded-circle"
+                    alt="Регистрация"
                   />
                 </div>
-                <form className='w-50' onSubmit={handleSubmit}>
-                  <h1 className='text-center mb-4'>{t('registration')}</h1>
-                  <div className='form-floating mb-3'>
+                <form className="w-50" onSubmit={handleSubmit}>
+                  <h1 className="text-center mb-4">{t('registration')}</h1>
+                  <div className="form-floating mb-3">
                     <input
-                      placeholder='От 3 до 20 символов'
-                      name='username'
-                      autoComplete='username'
+                      placeholder="От 3 до 20 символов"
+                      name="username"
+                      autoComplete="username"
                       required
-                      id='username'
+                      id="username"
                       className={`form-control ${
                         errors.username ? 'is-invalid' : ''
                       }`}
                       value={formData.username}
                       onChange={handleChange}
                     />
-                    <label className='form-label' htmlFor='username'>
+                    <label className="form-label" htmlFor="username">
                       {t('username')}
                     </label>
                     {errors.username && (
-                      <div className='invalid-feedback'>{errors.username}</div>
+                      <div className="invalid-feedback">{errors.username}</div>
                     )}
                   </div>
-                  <div className='form-floating mb-3'>
+                  <div className="form-floating mb-3">
                     <input
-                      placeholder='Не менее 6 символов'
-                      name='password'
-                      aria-describedby='passwordHelpBlock'
+                      placeholder="Не менее 6 символов"
+                      name="password"
+                      aria-describedby="passwordHelpBlock"
                       required
-                      autoComplete='new-password'
-                      type='password'
-                      id='password'
+                      autoComplete="new-password"
+                      type="password"
+                      id="password"
                       className={`form-control ${
                         errors.password ? 'is-invalid' : ''
                       }`}
                       value={formData.password}
                       onChange={handleChange}
                     />
-                    <label className='form-label' htmlFor='password'>
+                    <label className="form-label" htmlFor="password">
                       {t('password')}
                     </label>
                     {errors.password && (
-                      <div className='invalid-feedback'>{errors.password}</div>
+                      <div className="invalid-feedback">{errors.password}</div>
                     )}
                   </div>
-                  <div className='form-floating mb-4'>
+                  <div className="form-floating mb-4">
                     <input
-                      placeholder='Пароли должны совпадать'
-                      name='confirmPassword'
+                      placeholder="Пароли должны совпадать"
+                      name="confirmPassword"
                       required
-                      autoComplete='new-password'
-                      type='password'
-                      id='confirmPassword'
+                      autoComplete="new-password"
+                      type="password"
+                      id="confirmPassword"
                       className={`form-control ${
                         errors.confirmPassword ? 'is-invalid' : ''
                       }`}
                       value={formData.confirmPassword}
                       onChange={handleChange}
                     />
-                    <label className='form-label' htmlFor='confirmPassword'>
+                    <label className="form-label" htmlFor="confirmPassword">
                       {t('confirmPassword')}
                     </label>
                     {errors.confirmPassword && (
-                      <div className='invalid-feedback'>
+                      <div className="invalid-feedback">
                         {errors.confirmPassword}
                       </div>
                     )}
                   </div>
                   {errors && (
-                    <div className='text-danger mb-3'>{errors.general}</div>
+                    <div className="text-danger mb-3">{errors.general}</div>
                   )}
 
                   <button
-                    type='submit'
-                    className='w-100 btn btn-outline-primary'>
+                    type="submit"
+                    className="w-100 btn btn-outline-primary"
+                  >
                     {t('toRegistration')}
                   </button>
                 </form>

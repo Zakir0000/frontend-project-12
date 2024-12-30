@@ -7,6 +7,7 @@ extends:
   - plugin:react/recommended
   - plugin:functional/recommended
   - plugin:react-hooks/recommended
+  - prettier
 
 parserOptions:
   ecmaFeatures:
@@ -19,6 +20,16 @@ plugins:
   - functional
 
 rules:
+  react/jsx-wrap-multilines:
+    [
+      "error",
+      {
+        "declaration": "parens",
+        "assignment": "parens",
+        "return": "parens",
+        "arrow": "parens",
+      },
+    ]
   import/extensions: 0
   import/no-unresolved: 0
   react/prop-types: 0
@@ -31,8 +42,8 @@ rules:
   functional/no-try-statements: 0
   functional/no-throw-statements: 0
   functional/no-return-void: 0
-  no-underscore-dangle: [2, { 'allow': ['__filename', '__dirname'] }]
+  no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   react/function-component-definition:
-    [2, { 'namedComponents': 'arrow-function' }]
+    [2, { "namedComponents": "arrow-function" }]
   testing-library/no-debug: 0
-  react/jsx-filename-extension: [1, { 'extensions': ['.js', '.jsx'] }]
+  react/jsx-filename-extension: [1, { "extensions": [".js", ".jsx"] }]

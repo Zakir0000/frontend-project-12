@@ -1,3 +1,7 @@
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable no-param-reassign */
+/* eslint-disable functional/no-conditional-statement */
+
 import axios from 'axios';
 
 const axiosInstance = axios.create({

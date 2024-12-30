@@ -1,6 +1,13 @@
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable functional/no-try-statement */
+/* eslint-disable functional/no-conditional-statement */
+/* eslint-disable  functional/no-throw-statement */
+
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import filter from 'leo-profanity';
 import {
   addMessage,
   setChannels,
@@ -14,8 +21,6 @@ import axiosInstance from '../utils/axiosInstance';
 import initializeSocket from '../utils/socket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
-import { useTranslation } from 'react-i18next';
-import filter from 'leo-profanity';
 
 const Chat = () => {
   const { t } = useTranslation();
@@ -32,7 +37,6 @@ const Chat = () => {
   const navigate = useNavigate();
 
   const [newMessage, setNewMessage] = useState('');
-  const [socket, setSocket] = useState(null);
 
   // Fetch channels
   useEffect(() => {
@@ -93,8 +97,6 @@ const Chat = () => {
       dispatch(renameChannel(payload));
     });
 
-    setSocket(newSocket);
-
     return () => {
       newSocket.disconnect();
     };
@@ -128,38 +130,40 @@ const Chat = () => {
   };
 
   return (
-    <div className='h-100 bg-light'>
-      <div className='h-100' id='chat'>
-        <div className='d-flex flex-column h-100'>
-          <nav className='navbar navbar-light bg-white shadow-sm'>
-            <div className='container'>
-              <a className='navbar-brand' href='/'>
+    <div className="h-100 bg-light">
+      <div className="h-100" id="chat">
+        <div className="d-flex flex-column h-100">
+          <nav className="navbar navbar-light bg-white shadow-sm">
+            <div className="container">
+              <a className="navbar-brand" href="/">
                 {t('title')}
               </a>
               <button
                 onClick={handleLogout}
-                type='button'
-                className='btn btn-primary'>
+                type="button"
+                className="btn btn-primary"
+              >
                 {t('logout')}
               </button>
             </div>
           </nav>
-          <div className='container h-100 my-4 rounded shadow overflow-hidden '>
-            <div className='row h-100 bg-white flex-md-row'>
+          <div className="container h-100 my-4 rounded shadow overflow-hidden ">
+            <div className="row h-100 bg-white flex-md-row">
               <Sidebar />
-              <div className='col p-0 h-100'>
-                <div className='d-flex flex-column h-100'>
-                  <div className='bg-light mb-4 p-3 shadow-sm small'>
-                    <p className='m-0'>
+              <div className="col p-0 h-100">
+                <div className="d-flex flex-column h-100">
+                  <div className="bg-light mb-4 p-3 shadow-sm small">
+                    <p className="m-0">
                       <b>
-                        #{' '}
-                        {channels.find((c) => c.id === activeChannelId)?.name ||
-                          'general'}
+                        #
+                        {' '}
+                        {channels.find((c) => c.id === activeChannelId)?.name
+                          || 'general'}
                       </b>
                     </p>
-                    <span className='text-muted'>
-                      {messages &&
-                        t('counts.count', {
+                    <span className="text-muted">
+                      {messages
+                        && t('counts.count', {
                           count: messages.length,
                         })}
                     </span>
@@ -167,20 +171,21 @@ const Chat = () => {
                   <MessagesBox messages={messages} />
                   <form
                     onSubmit={handleSendMessage}
-                    className='mt-auto px-5 py-3'>
-                    <div className='input-group'>
+                    className="mt-auto px-5 py-3"
+                  >
+                    <div className="input-group">
                       <input
-                        id='name'
-                        className='form-control'
+                        id="name"
+                        className="form-control"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder={t('enterMessage')}
-                        aria-label='Новое сообщение'
+                        aria-label="Новое сообщение"
                       />
 
-                      <button type='submit' className='btn btn-primary'>
+                      <button type="submit" className="btn btn-primary">
                         {t('send')}
-                        <span className='visually-hidden'>Отправить</span>
+                        <span className="visually-hidden">Отправить</span>
                       </button>
                     </div>
                   </form>

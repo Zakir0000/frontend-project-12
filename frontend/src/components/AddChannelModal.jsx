@@ -1,13 +1,18 @@
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable functional/no-try-statement */
+/* eslint-disable functional/no-conditional-statement */
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import filter from 'leo-profanity';
-import { setChannels } from '../features/chatSlice';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import filter from 'leo-profanity';
+import { setChannels } from '../features/chatSlice';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
@@ -63,6 +68,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
       }
     },
   });
+
   useEffect(() => {
     if (!show) {
       formik.resetForm();
@@ -76,14 +82,14 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
-          <Form.Label className='visually-hidden'>
+          <Form.Label className="visually-hidden">
             {t('channel.channelName')}
           </Form.Label>
-          <Form.Group controlId='channelName'>
+          <Form.Group controlId="channelName">
             <Form.Control
               autoFocus
-              type='text'
-              name='channelName'
+              type="text"
+              name="channelName"
               value={formik.values.channelName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -91,21 +97,22 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
                 formik.touched.channelName && !!formik.errors.channelName
               }
             />
-            <label className='visually-hidden' htmlFor='name'>
+            <Form.Label className="visually-hidden" htmlFor="channelName">
               Имя канала
-            </label>
-            <Form.Control.Feedback type='invalid'>
+            </Form.Label>
+            <Form.Control.Feedback type="invalid">
               {formik.errors.channelName}
             </Form.Control.Feedback>
           </Form.Group>
-          <div className='mt-3 d-flex justify-content-end'>
-            <Button variant='secondary' onClick={onHide} className='me-2'>
+          <div className="mt-3 d-flex justify-content-end">
+            <Button variant="secondary" onClick={onHide} className="me-2">
               {t('cancel')}
             </Button>
             <Button
-              variant='primary'
-              type='submit'
-              disabled={formik.isSubmitting}>
+              variant="primary"
+              type="submit"
+              disabled={formik.isSubmitting}
+            >
               {t('send')}
             </Button>
           </div>

@@ -1,15 +1,20 @@
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable functional/no-try-statement */
+/* eslint-disable functional/no-conditional-statement */
+/* eslint-disable  functional/no-throw-statement */
+
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { login } from '../features/authSlice';
-import avatarImage from '../assets/avatar.jpg';
 import { Button, Form, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import routes from '../routes';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import routes from '../routes';
+import avatarImage from '../assets/avatar.jpg';
+import { login } from '../features/authSlice';
 import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
@@ -36,8 +41,8 @@ const LoginPage = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('username', response.data.username);
         navigate('/');
-      } catch (error) {
-        if (error.response?.status === 401) {
+      } catch (e) {
+        if (e.response?.status === 401) {
           setError(t('errors.invalidCredentials'));
         } else {
           setError(t('errrors.errorTryAgain'));
@@ -50,77 +55,79 @@ const LoginPage = () => {
   });
 
   return (
-    <div className='d-flex flex-column h-100'>
-      <nav className='shadow-sm navbar navbar-expand-lg navbar-light bg-white'>
-        <div className='container'>
-          <a className='navbar-brand' href='/'>
+    <div className="d-flex flex-column h-100">
+      <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
+        <div className="container">
+          <a className="navbar-brand" href="/">
             {t('title')}
           </a>
         </div>
       </nav>
-      <div className='container-fluid h-100'>
-        <div className='row justify-content-center align-content-center h-100'>
-          <div className='col-12 col-md-8 col-xxl-6'>
-            <div className='card shadow-sm'>
-              <div className='card-body row p-5'>
-                <div className='col-12 col-md-6 d-flex align-items-center justify-content-center'>
+      <div className="container-fluid h-100">
+        <div className="row justify-content-center align-content-center h-100">
+          <div className="col-12 col-md-8 col-xxl-6">
+            <div className="card shadow-sm">
+              <div className="card-body row p-5">
+                <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                   <img
                     src={avatarImage}
-                    className='rounded-circle'
-                    alt='Войти'
+                    className="rounded-circle"
+                    alt="Войти"
                   />
                 </div>
                 <Form
                   onSubmit={formik.handleSubmit}
-                  className='col-12 col-md-6 mt-3 mt-md-0'>
-                  <h1 className='text-center mb-4'>{t('enter')}</h1>
+                  className="col-12 col-md-6 mt-3 mt-md-0"
+                >
+                  <h1 className="text-center mb-4">{t('enter')}</h1>
 
-                  <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='username'>{t('nick')}</Form.Label>
+                  <Form.Group className="mb-3">
+                    <Form.Label htmlFor="username">{t('nick')}</Form.Label>
                     <Form.Control
-                      type='text'
-                      name='username'
-                      id='username'
+                      type="text"
+                      name="username"
+                      id="username"
                       placeholder={t('nick')}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
                       isInvalid={error}
                     />
-                    <Form.Control.Feedback type='invalid'>
+                    <Form.Control.Feedback type="invalid">
                       {formik.errors.username}
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='password'>{t('password')}</Form.Label>
+                  <Form.Group className="mb-3">
+                    <Form.Label htmlFor="password">{t('password')}</Form.Label>
                     <Form.Control
-                      type='password'
-                      name='password'
-                      id='password'
+                      type="password"
+                      name="password"
+                      id="password"
                       placeholder={t('password')}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
                       isInvalid={error}
                     />
-                    <Form.Control.Feedback type='invalid'>
+                    <Form.Control.Feedback type="invalid">
                       {formik.errors.password}
                     </Form.Control.Feedback>
                   </Form.Group>
-                  {error && <Alert variant='danger'>{error}</Alert>}
+                  {error && <Alert variant="danger">{error}</Alert>}
                   <Button
-                    type='submit'
-                    className='w-100'
-                    variant='outline-primary'
-                    disabled={formik.isSubmitting}>
+                    type="submit"
+                    className="w-100"
+                    variant="outline-primary"
+                    disabled={formik.isSubmitting}
+                  >
                     {t('enter')}
                   </Button>
                 </Form>
               </div>
-              <div className='card-footer p-4'>
-                <div className='text-center'>
+              <div className="card-footer p-4">
+                <div className="text-center">
                   <span>{t('noAccount')}?</span>{' '}
-                  <a href='/signup'>{t('registration')}</a>
+                  <a href="/signup">{t('registration')}</a>
                 </div>
               </div>
             </div>
