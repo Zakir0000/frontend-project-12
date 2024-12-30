@@ -14,8 +14,6 @@
     "@hexlet/chat-server": "2.0.4"
   },
   "devDependencies": {
-    "@eslint/create-config": "^1.0.0",
-    "@playwright/test": "^1.49.1",
-    "eslint": "^8.57.0"
+    "@playwright/test": "^1.49.1"
   }
 }

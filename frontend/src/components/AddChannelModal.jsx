@@ -1,6 +1,3 @@
-/* eslint-disable functional/no-expression-statement */
-/* eslint-disable functional/no-try-statement */
-/* eslint-disable functional/no-conditional-statement */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useEffect } from 'react';

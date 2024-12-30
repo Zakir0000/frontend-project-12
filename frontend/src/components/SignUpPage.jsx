@@ -1,8 +1,3 @@
-/* eslint-disable functional/no-expression-statement */
-/* eslint-disable functional/no-try-statement */
-/* eslint-disable functional/no-conditional-statement */
-/* eslint-disable  functional/no-throw-statement */
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
