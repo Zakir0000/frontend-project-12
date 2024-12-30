@@ -27,7 +27,7 @@ const ChannelItem = ({ channel }) => {
 
   useEffect(() => {
     if (showRenameModal && inputRef.current) {
-      inputRef.current?.focus();
+      inputRef.current.focus();
       inputRef.current.select();
     }
   }, [showRenameModal]);
@@ -161,19 +161,22 @@ const ChannelItem = ({ channel }) => {
               <Modal.Title>{t('channel.channelRename')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Control
-                name='name'
-                id='name'
-                ref={inputRef}
-                type='text'
-                value={newChannelName}
-                onChange={(e) => setNewChannelName(e.target.value)}
-                onKeyDown={handleKeyPress}
-                disabled={loading}
-              />
-              <label className='visually-hidden' htmlFor='name'>
-                Имя канала
-              </label>
+              <Form>
+                <Form.Group controlId='channelName'>
+                  <Form.Label className='visually-hidden' htmlFor='channelName'>
+                    {t('channel.channelName')}
+                  </Form.Label>
+                  <Form.Control
+                    id='channelName'
+                    type='text'
+                    value={newChannelName}
+                    onChange={(e) => setNewChannelName(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    disabled={loading}
+                    inputRef={inputRef}
+                  />
+                </Form.Group>
+              </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button

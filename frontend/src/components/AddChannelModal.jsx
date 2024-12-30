@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import filter from 'leo-profanity';
 import { setChannels } from '../features/chatSlice';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import filter from 'leo-profanity';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
-  const filterProfanity = (text) => {
-    return filter.clean(text);
-  };
+  const filterProfanity = (text) => filter.clean(text);
 
   const { t } = useTranslation();
   const dispatch = useDispatch();

@@ -57,11 +57,10 @@ const Chat = () => {
     if (activeChannelId) {
       const fetchMessages = async () => {
         try {
-          const response = await axiosInstance.get('/messages').then((res) => {
-            const filteredMessages = res.data.filter(
-              (msg) => msg.channelId === activeChannelId,
-            );
-          });
+          const response = await axiosInstance.get('/messages');
+          const filteredMessages = response.data.filter(
+            (msg) => msg.channelId === activeChannelId,
+          );
 
           dispatch(
             setMessages({
