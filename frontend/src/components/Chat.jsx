@@ -3,17 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
-import {
-  addMessage,
-  setChannels,
-  setMessages,
-  setActiveChannelId,
-  addChannel,
-  removeChannel,
-  renameChannel,
-} from '../features/chatSlice';
+import { getChannels, setActiveChannelId } from '../features/channelsSlice';
+import { setMessages } from '../features/messagesSlice';
 import axiosInstance from '../utils/axiosInstance';
-import initializeSocket from '../utils/socket';
+
+import useSocket from '../hooks/useSocket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
 
@@ -23,22 +17,26 @@ const Chat = () => {
 
   const filterProfanity = (text) => filter.clean(text);
 
-  const channels = useSelector((state) => state.chat.channels);
-  const activeChannelId = useSelector((state) => state.chat.activeChannelId);
+  const channels = useSelector((state) => state.channels.channels);
+  const activeChannelId = useSelector(
+    (state) => state.channels.activeChannelId,
+  );
   const messages = useSelector(
-    (state) => state.chat.messagesByChannel[activeChannelId] || [],
+    (state) => state.messages.messagesByChannel[activeChannelId] || [],
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [newMessage, setNewMessage] = useState('');
 
+  useSocket();
+
   // Fetch channels
   useEffect(() => {
     const fetchChannels = async () => {
       try {
         const response = await axiosInstance.get('/channels');
-        dispatch(setChannels(response.data));
+        dispatch(getChannels(response.data));
         if (response.data.length > 0) {
           dispatch(setActiveChannelId(response.data[0].id));
         }
@@ -75,27 +73,6 @@ const Chat = () => {
       fetchMessages();
     }
   }, [activeChannelId, dispatch]);
-
-  // Initialize Socket.IO
-  useEffect(() => {
-    const newSocket = initializeSocket(dispatch, addMessage);
-
-    newSocket.on('newChannel', (channel) => {
-      dispatch(addChannel(channel));
-    });
-
-    newSocket.on('removeChannel', (payload) => {
-      dispatch(removeChannel(payload));
-    });
-
-    newSocket.on('renameChannel', (payload) => {
-      dispatch(renameChannel(payload));
-    });
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [dispatch]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -153,14 +130,13 @@ const Chat = () => {
                         #
                         {' '}
                         {channels.find((c) => c.id === activeChannelId)?.name
-                          || 'general'}
+                        || 'general'}
                       </b>
                     </p>
                     <span className="text-muted">
-                      {messages
-                        && t('counts.count', {
-                          count: messages.length,
-                        })}
+                      {messages && t('counts.count', {
+                        count: messages.length,
+                      })}
                     </span>
                   </div>
                   <MessagesBox messages={messages} />

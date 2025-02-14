@@ -37,6 +37,7 @@ const LoginPage = () => {
         localStorage.setItem('username', response.data.username);
         navigate('/');
       } catch (e) {
+        console.log(e);
         if (e.response?.status === 401) {
           setError(t('errors.invalidCredentials'));
         } else {
@@ -86,7 +87,9 @@ const LoginPage = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.username}
-                      isInvalid={error}
+                      isInvalid={
+                        formik.touched.username && !!formik.errors.username
+                      }
                     />
                     <Form.Control.Feedback type="invalid">
                       {formik.errors.username}
@@ -102,7 +105,9 @@ const LoginPage = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.password}
-                      isInvalid={error}
+                      isInvalid={
+                        formik.touched.password && !!formik.errors.password
+                      }
                     />
                     <Form.Control.Feedback type="invalid">
                       {formik.errors.password}

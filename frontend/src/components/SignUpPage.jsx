@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import avatar from '../assets/avatar_1.jpg';
+import { login } from '../features/authSlice';
 
 const SignUpPage = () => {
   filter.loadDictionary('en');
@@ -52,7 +53,9 @@ const SignUpPage = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
 
-      dispatch({ type: 'auth/login', payload: { token: response.data.token } });
+      dispatch(
+        login({ token: response.data.token, username: response.data.username }),
+      );
       navigate('/');
     } catch (err) {
       if (err.response?.status === 409) {

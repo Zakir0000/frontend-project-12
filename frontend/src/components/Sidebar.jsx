@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import AddChannelModal from './AddChannelModal';
 import ChannelItem from './ChannelItem';
-import { setActiveChannelId } from '../features/chatSlice';
+import { setActiveChannelId } from '../features/channelsSlice';
+import { openModal, closeModal } from '../features/uiSlice';
 
 const Sidebar = () => {
   const { t } = useTranslation();
-  const channels = useSelector((state) => state.chat.channels);
-
-  const [showAddChannelModal, setShowAddChannelModal] = useState(false);
+  const channels = useSelector((state) => state.channels.channels);
+  const { isModalOpen, modalType } = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   const handleAddChannel = () => {
-    setShowAddChannelModal(true);
+    dispatch(openModal({ type: 'addChannel' }));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(closeModal());
   };
 
   return (
@@ -46,8 +51,8 @@ const Sidebar = () => {
         ))}
       </ul>
       <AddChannelModal
-        show={showAddChannelModal}
-        onHide={() => setShowAddChannelModal(false)}
+        show={isModalOpen && modalType === 'addChannel'}
+        onHide={handleCloseModal}
         setActiveChannelId={setActiveChannelId}
       />
     </div>

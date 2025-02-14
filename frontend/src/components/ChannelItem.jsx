@@ -11,30 +11,33 @@ import { toast } from 'react-toastify';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
-  setChannels,
+  getChannels,
   setActiveChannelId,
   removeChannel,
-} from '../features/chatSlice';
+} from '../features/channelsSlice';
+import { openModal, closeModal } from '../features/uiSlice';
 
 const ChannelItem = ({ channel }) => {
   const { t } = useTranslation();
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showRenameModal, setShowRenameModal] = useState(false);
   const [newChannelName, setNewChannelName] = useState(channel.name);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
   const dispatch = useDispatch();
-  const channels = useSelector((state) => state.chat.channels);
-  const activeChannelId = useSelector((state) => state.chat.activeChannelId);
+  const channels = useSelector((state) => state.channels.channels);
+  const activeChannelId = useSelector(
+    (state) => state.channels.activeChannelId,
+  );
   const isProtectedChannel = ['general', 'random'].includes(channel.name);
 
+  const { isModalOpen, modalType } = useSelector((state) => state.ui);
+
   useEffect(() => {
-    if (showRenameModal && inputRef.current) {
+    if (modalType === 'renameChannel' && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [showRenameModal]);
+  }, [modalType]);
 
   const handleDeleteChannel = async () => {
     setLoading(true);
@@ -50,7 +53,7 @@ const ChannelItem = ({ channel }) => {
       toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
-      setShowDeleteModal(false);
+      dispatch(closeModal());
     }
   };
 
@@ -66,17 +69,21 @@ const ChannelItem = ({ channel }) => {
         },
       );
 
-      const updatedChannels = channels.map((c) => (c.id === channel.id
-        ? { ...c, name: newChannelName } : c));
+      const updatedChannels = channels.map((c) => {
+        if (c.id === channel.id) {
+          return { ...c, name: newChannelName };
+        }
+        return c;
+      });
 
-      dispatch(setChannels(updatedChannels));
+      dispatch(getChannels(updatedChannels));
 
       toast.success(t('channel.channelRenamed'));
     } catch (error) {
       toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
-      setShowRenameModal(false);
+      dispatch(closeModal());
     }
   };
 
@@ -84,6 +91,14 @@ const ChannelItem = ({ channel }) => {
     if (event.key === 'Enter') {
       handleRenameChannel();
     }
+  };
+
+  const handleOpenRenameModal = () => {
+    dispatch(openModal({ type: 'renameChannel' }));
+  };
+
+  const handleOpenDeleteModal = () => {
+    dispatch(openModal({ type: 'deleteChannel' }));
   };
 
   return (
@@ -120,10 +135,10 @@ const ChannelItem = ({ channel }) => {
             <Dropdown.Menu>
               {!isProtectedChannel && (
                 <>
-                  <Dropdown.Item onClick={() => setShowDeleteModal(true)}>
+                  <Dropdown.Item onClick={handleOpenDeleteModal}>
                     {t('delete')}
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setShowRenameModal(true)}>
+                  <Dropdown.Item onClick={handleOpenRenameModal}>
                     {t('rename')}
                   </Dropdown.Item>
                 </>
@@ -135,8 +150,8 @@ const ChannelItem = ({ channel }) => {
         {/* Delete Confirmation Modal */}
         <Modal
           centered
-          show={showDeleteModal}
-          onHide={() => setShowDeleteModal(false)}
+          show={isModalOpen && modalType === 'deleteChannel'}
+          onHide={() => dispatch(closeModal())}
         >
           <Modal.Header closeButton>
             <Modal.Title>{t('channel.channelDelete')}</Modal.Title>
@@ -148,7 +163,7 @@ const ChannelItem = ({ channel }) => {
           <Modal.Footer>
             <Button
               variant="secondary"
-              onClick={() => setShowDeleteModal(false)}
+              onClick={() => dispatch(closeModal())}
               disabled={loading}
             >
               {t('cancel')}
@@ -166,8 +181,8 @@ const ChannelItem = ({ channel }) => {
         {/* Rename Channel Modal */}
         <Modal
           centered
-          show={showRenameModal}
-          onHide={() => setShowRenameModal(false)}
+          show={isModalOpen && modalType === 'renameChannel'}
+          onHide={() => dispatch(closeModal())}
         >
           <Modal.Header closeButton>
             <Modal.Title>{t('channel.channelRename')}</Modal.Title>
@@ -185,7 +200,7 @@ const ChannelItem = ({ channel }) => {
                   onChange={(e) => setNewChannelName(e.target.value)}
                   onKeyDown={handleKeyPress}
                   disabled={loading}
-                  inputref={inputRef}
+                  ref={inputRef}
                 />
               </Form.Group>
             </Form>
@@ -193,7 +208,7 @@ const ChannelItem = ({ channel }) => {
           <Modal.Footer>
             <Button
               variant="secondary"
-              onClick={() => setShowRenameModal(false)}
+              onClick={() => dispatch(closeModal())}
               disabled={loading}
             >
               {t('cancel')}

@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
-import { setChannels } from '../features/chatSlice';
+import { getChannels } from '../features/channelsSlice';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
@@ -17,7 +17,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const channels = useSelector((state) => state.chat.channels);
+  const channels = useSelector((state) => state.channels.channels);
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +44,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const newChannel = response.data;
-        dispatch(setChannels([...channels, newChannel]));
+        dispatch(getChannels([...channels, newChannel]));
         dispatch(setActiveChannelId(newChannel.id));
         toast.success(t('channel.channelCreated'), {
           autoClose: 5000,
