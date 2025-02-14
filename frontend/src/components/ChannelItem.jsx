@@ -11,9 +11,9 @@ import { toast } from 'react-toastify';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
-  getChannels,
   setActiveChannelId,
   removeChannel,
+  renameChannel,
 } from '../features/channelsSlice';
 import { openModal, closeModal } from '../features/uiSlice';
 
@@ -21,6 +21,7 @@ const ChannelItem = ({ channel }) => {
   const { t } = useTranslation();
   const [newChannelName, setNewChannelName] = useState(channel.name);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const inputRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ const ChannelItem = ({ channel }) => {
 
       dispatch(removeChannel({ id: channel.id }));
       toast.success(t('channel.channelDeleted'));
-    } catch (error) {
+    } catch (e) {
       toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
@@ -59,6 +60,25 @@ const ChannelItem = ({ channel }) => {
 
   const handleRenameChannel = async () => {
     setLoading(true);
+
+    if (!newChannelName.trim()) {
+      setError(t('errors.channelNameRequired'));
+      setLoading(false);
+      return;
+    }
+
+    if (newChannelName.length < 3 || newChannelName.length > 20) {
+      setError(t('errors.channelNameError'));
+      setLoading(false);
+      return;
+    }
+
+    if (channels.some((c) => c.name.toLowerCase() === newChannelName.toLowerCase())) {
+      setError(t('errors.uniqueError'));
+      setLoading(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -69,17 +89,18 @@ const ChannelItem = ({ channel }) => {
         },
       );
 
-      const updatedChannels = channels.map((c) => {
-        if (c.id === channel.id) {
-          return { ...c, name: newChannelName };
-        }
-        return c;
-      });
+      // const updatedChannels = channels.map((c) => {
+      //   if (c.id === channel.id) {
+      //     return { ...c, name: newChannelName };
+      //   }
+      //   return c;
+      // });
 
-      dispatch(getChannels(updatedChannels));
+      // dispatch(getChannels(updatedChannels));
+      dispatch(renameChannel({ id: channel.id, name: newChannelName }));
 
       toast.success(t('channel.channelRenamed'));
-    } catch (error) {
+    } catch (err) {
       toast.error(t('errors.connection'));
     } finally {
       setLoading(false);
@@ -197,11 +218,15 @@ const ChannelItem = ({ channel }) => {
                   id="channelName"
                   type="text"
                   value={newChannelName}
-                  onChange={(e) => setNewChannelName(e.target.value)}
+                  onChange={(e) => {
+                    setNewChannelName(e.target.value);
+                    setError('');
+                  }}
                   onKeyDown={handleKeyPress}
                   disabled={loading}
                   ref={inputRef}
                 />
+                {error && <div className="text-danger mt-2">{error}</div>}
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -216,7 +241,6 @@ const ChannelItem = ({ channel }) => {
             <Button
               variant="primary"
               onClick={handleRenameChannel}
-              disabled={loading}
             >
               {loading ? t('saving') : t('save')}
             </Button>
