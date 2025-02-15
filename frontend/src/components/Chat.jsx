@@ -6,10 +6,10 @@ import filter from 'leo-profanity';
 import { getChannels, setActiveChannelId } from '../features/channelsSlice';
 import { setMessages } from '../features/messagesSlice';
 import axiosInstance from '../utils/axiosInstance';
-
 import useSocket from '../hooks/useSocket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
+import { logout } from '../features/authSlice';
 
 const Chat = () => {
   const { t } = useTranslation();
@@ -24,6 +24,8 @@ const Chat = () => {
   const messages = useSelector(
     (state) => state.messages.messagesByChannel[activeChannelId] || [],
   );
+  const username = useSelector((state) => state.auth.user);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -42,7 +44,6 @@ const Chat = () => {
         }
       } catch (error) {
         console.error('Failed to fetch channels:', error);
-
         throw new Error('Error fetching channels');
       }
     };
@@ -81,7 +82,6 @@ const Chat = () => {
     const filteredMessage = filterProfanity(newMessage);
 
     try {
-      const username = localStorage.getItem('username');
       const messageData = {
         body: filteredMessage,
         channelId: activeChannelId,
@@ -91,13 +91,12 @@ const Chat = () => {
       setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
-
       throw new Error('Error sending message');
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    dispatch(logout());
     navigate('/login');
   };
 

@@ -32,9 +32,6 @@ const LoginPage = () => {
       try {
         const response = await axios.post(routes.loginPath(), values);
         dispatch(login(response.data));
-
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('username', response.data.username);
         navigate('/');
       } catch (e) {
         console.log(e);
