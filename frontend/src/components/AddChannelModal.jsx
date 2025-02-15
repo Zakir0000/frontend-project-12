@@ -9,15 +9,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
-import { getChannels } from '../features/channelsSlice';
+import { getChannels, setActiveChannelId } from '../features/channelsSlice';
+import { closeModal } from '../features/uiSlice';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
+const AddChannelModal = () => {
   const filterProfanity = (text) => filter.clean(text);
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels.channels);
+  const { isModalOpen, modalType } = useSelector((state) => state.ui);
+
+  const handleCloseModal = () => {
+    dispatch(closeModal());
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -50,7 +56,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
           autoClose: 5000,
         });
         resetForm();
-        onHide();
+        handleCloseModal();
       } catch (error) {
         console.error('Failed to create channel:', error);
         if (!error.response) {
@@ -67,13 +73,13 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
   });
 
   useEffect(() => {
-    if (!show) {
+    if (!isModalOpen) {
       formik.resetForm();
     }
-  }, [show]);
+  }, [isModalOpen]);
 
   return (
-    <Modal centered show={show} onHide={onHide}>
+    <Modal centered show={isModalOpen && modalType === 'addChannel'} onHide={handleCloseModal}>
       <Modal.Header closeButton>
         <Modal.Title>{t('channel.addChannel')}</Modal.Title>
       </Modal.Header>
@@ -82,7 +88,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
           <Form.Label className="visually-hidden">
             {t('channel.channelName')}
           </Form.Label>
-          <Form.Group controlId="channelName">
+          <Form.Group>
             <Form.Control
               autoFocus
               type="text"
@@ -102,7 +108,7 @@ const AddChannelModal = ({ show, onHide, setActiveChannelId }) => {
             </Form.Control.Feedback>
           </Form.Group>
           <div className="mt-3 d-flex justify-content-end">
-            <Button variant="secondary" onClick={onHide} className="me-2">
+            <Button variant="secondary" onClick={handleCloseModal} className="me-2">
               {t('cancel')}
             </Button>
             <Button

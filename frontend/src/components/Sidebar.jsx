@@ -3,21 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import AddChannelModal from './AddChannelModal';
 import ChannelItem from './ChannelItem';
-import { setActiveChannelId } from '../features/channelsSlice';
-import { openModal, closeModal } from '../features/uiSlice';
+import { openModal } from '../features/uiSlice';
 
 const Sidebar = () => {
   const { t } = useTranslation();
   const channels = useSelector((state) => state.channels.channels);
-  const { isModalOpen, modalType } = useSelector((state) => state.ui);
+  const activeChannelId = useSelector((state) => state.channels.activeChannelId);
   const dispatch = useDispatch();
 
   const handleAddChannel = () => {
-    dispatch(openModal({ type: 'addChannel' }));
-  };
-
-  const handleCloseModal = () => {
-    dispatch(closeModal());
+    dispatch(openModal({ type: 'addChannel', channelId: activeChannelId }));
   };
 
   return (
@@ -50,11 +45,7 @@ const Sidebar = () => {
           <ChannelItem key={channel.id} channel={channel} />
         ))}
       </ul>
-      <AddChannelModal
-        show={isModalOpen && modalType === 'addChannel'}
-        onHide={handleCloseModal}
-        setActiveChannelId={setActiveChannelId}
-      />
+      <AddChannelModal />
     </div>
   );
 };

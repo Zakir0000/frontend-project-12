@@ -31,7 +31,7 @@ const ChannelItem = ({ channel }) => {
   );
   const isProtectedChannel = ['general', 'random'].includes(channel.name);
 
-  const { isModalOpen, modalType } = useSelector((state) => state.ui);
+  const { isModalOpen, modalType, modalChannelId } = useSelector((state) => state.ui);
 
   useEffect(() => {
     if (modalType === 'renameChannel' && inputRef.current) {
@@ -89,16 +89,7 @@ const ChannelItem = ({ channel }) => {
         },
       );
 
-      // const updatedChannels = channels.map((c) => {
-      //   if (c.id === channel.id) {
-      //     return { ...c, name: newChannelName };
-      //   }
-      //   return c;
-      // });
-
-      // dispatch(getChannels(updatedChannels));
       dispatch(renameChannel({ id: channel.id, name: newChannelName }));
-
       toast.success(t('channel.channelRenamed'));
     } catch (err) {
       toast.error(t('errors.connection'));
@@ -115,11 +106,11 @@ const ChannelItem = ({ channel }) => {
   };
 
   const handleOpenRenameModal = () => {
-    dispatch(openModal({ type: 'renameChannel' }));
+    dispatch(openModal({ type: 'renameChannel', channelId: channel.id }));
   };
 
   const handleOpenDeleteModal = () => {
-    dispatch(openModal({ type: 'deleteChannel' }));
+    dispatch(openModal({ type: 'deleteChannel', channelId: channel.id }));
   };
 
   return (
@@ -171,7 +162,7 @@ const ChannelItem = ({ channel }) => {
         {/* Delete Confirmation Modal */}
         <Modal
           centered
-          show={isModalOpen && modalType === 'deleteChannel'}
+          show={isModalOpen && modalType === 'deleteChannel' && modalChannelId === channel.id}
           onHide={() => dispatch(closeModal())}
         >
           <Modal.Header closeButton>
@@ -202,7 +193,7 @@ const ChannelItem = ({ channel }) => {
         {/* Rename Channel Modal */}
         <Modal
           centered
-          show={isModalOpen && modalType === 'renameChannel'}
+          show={isModalOpen && modalType === 'renameChannel' && modalChannelId === channel.id}
           onHide={() => dispatch(closeModal())}
         >
           <Modal.Header closeButton>
@@ -211,11 +202,11 @@ const ChannelItem = ({ channel }) => {
           <Modal.Body>
             <Form>
               <Form.Group>
-                <Form.Label className="visually-hidden" htmlFor="channelName">
+                <Form.Label className="visually-hidden" htmlFor="name">
                   {t('channel.channelName')}
                 </Form.Label>
                 <Form.Control
-                  id="channelName"
+                  id={channel.id}
                   type="text"
                   value={newChannelName}
                   onChange={(e) => {
