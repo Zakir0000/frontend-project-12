@@ -7,9 +7,9 @@ import {
   Form,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import cn from 'classnames';
-import { useTranslation } from 'react-i18next';
 import {
   setActiveChannelId,
   removeChannel,
@@ -90,7 +90,9 @@ const ChannelItem = ({ channel }) => {
       );
 
       dispatch(renameChannel({ id: channel.id, name: newChannelName }));
-      toast.success(t('channel.channelRenamed'));
+      toast.success(t('channel.channelRenamed', {
+        autoClose: 5000,
+      }));
     } catch (err) {
       toast.error(t('errors.connection'));
     } finally {
@@ -202,11 +204,11 @@ const ChannelItem = ({ channel }) => {
           <Modal.Body>
             <Form>
               <Form.Group>
-                <Form.Label className="visually-hidden" htmlFor="name">
+                <Form.Label className="visually-hidden" htmlFor="channelName">
                   {t('channel.channelName')}
                 </Form.Label>
                 <Form.Control
-                  id={channel.id}
+                  id="channelName"
                   type="text"
                   value={newChannelName}
                   onChange={(e) => {
@@ -233,7 +235,7 @@ const ChannelItem = ({ channel }) => {
               variant="primary"
               onClick={handleRenameChannel}
             >
-              {loading ? t('saving') : t('save')}
+              {loading ? t('saving') : t('send')}
             </Button>
           </Modal.Footer>
         </Modal>
