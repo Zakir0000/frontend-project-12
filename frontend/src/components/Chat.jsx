@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
 import { getChannels, setActiveChannelId } from '../features/channelsSlice';
-import { setMessages } from '../features/messagesSlice';
+import { getMessages } from '../features/messagesSlice';
 import axiosInstance from '../utils/axiosInstance';
-import useSocket from '../hooks/useSocket';
 import Sidebar from './Sidebar';
 import MessagesBox from './MessagesBox';
 import { logout } from '../features/authSlice';
+import { ROUTES } from '../routes';
 
 const Chat = () => {
   const { t } = useTranslation();
@@ -25,55 +25,64 @@ const Chat = () => {
     (state) => state.messages.messagesByChannel[activeChannelId] || [],
   );
   const username = useSelector((state) => state.auth.user);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [newMessage, setNewMessage] = useState('');
 
-  useSocket();
-
   // Fetch channels
+
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await axiosInstance.get('/channels');
+        const response = await axiosInstance.get(ROUTES.CHANNELS);
         dispatch(getChannels(response.data));
         if (response.data.length > 0) {
           dispatch(setActiveChannelId(response.data[0].id));
         }
       } catch (error) {
         console.error('Failed to fetch channels:', error);
-        throw new Error('Error fetching channels');
+        if (error.response && error.response.status === 401) {
+          dispatch(logout());
+          navigate(ROUTES.LOGIN);
+        } else {
+          throw new Error('Error fetching channels');
+        }
       }
     };
     fetchChannels();
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   // Fetch messages
+
   useEffect(() => {
     if (activeChannelId) {
       const fetchMessages = async () => {
         try {
-          const response = await axiosInstance.get('/messages');
+          const response = await axiosInstance.get(ROUTES.MESSAGES);
           const filteredMessages = response.data.filter(
             (msg) => msg.channelId === activeChannelId,
           );
 
           dispatch(
-            setMessages({
+            getMessages({
               channelId: activeChannelId,
               messages: filteredMessages,
             }),
           );
         } catch (error) {
           console.error('Failed to fetch messages:', error);
-          throw new Error('Error fetching messages');
+          if (error.response && error.response.status === 401) {
+            dispatch(logout());
+            navigate(ROUTES.LOGIN);
+          } else {
+            throw new Error('Error fetching messages');
+          }
         }
       };
       fetchMessages();
     }
-  }, [activeChannelId, dispatch]);
+  }, [activeChannelId, dispatch, navigate]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -87,7 +96,7 @@ const Chat = () => {
         channelId: activeChannelId,
         username,
       };
-      await axiosInstance.post('/messages', messageData);
+      await axiosInstance.post(ROUTES.MESSAGES, messageData);
       setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -97,7 +106,7 @@ const Chat = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate(ROUTES.LOGIN);
   };
 
   return (

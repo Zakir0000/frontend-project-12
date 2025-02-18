@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Alert } from 'react-bootstrap';
@@ -7,10 +6,11 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import routes from '../routes';
+import { ROUTES } from '../routes';
 import avatarImage from '../assets/avatar.jpg';
 import { login } from '../features/authSlice';
 import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../utils/axiosInstance';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -30,9 +30,9 @@ const LoginPage = () => {
 
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const response = await axios.post(routes.loginPath(), values);
+        const response = await axiosInstance.post(ROUTES.LOGIN, values);
         dispatch(login(response.data));
-        navigate('/');
+        navigate(ROUTES.CHAT);
       } catch (e) {
         console.log(e);
         if (e.response?.status === 401) {

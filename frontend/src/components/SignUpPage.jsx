@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import avatar from '../assets/avatar_1.jpg';
 import { login } from '../features/authSlice';
+import axiosInstance from '../utils/axiosInstance';
+import { ROUTES } from '../routes';
 
 const SignUpPage = () => {
   filter.loadDictionary('en');
@@ -45,7 +46,7 @@ const SignUpPage = () => {
     }
 
     try {
-      const response = await axios.post('/api/v1/signup', {
+      const response = await axiosInstance.post(ROUTES.SIGNUP, {
         username,
         password,
       });
@@ -56,7 +57,7 @@ const SignUpPage = () => {
       dispatch(
         login({ token: response.data.token, username: response.data.username }),
       );
-      navigate('/');
+      navigate(ROUTES.CHAT);
     } catch (err) {
       if (err.response?.status === 409) {
         setErrors({ username: t('errors.error409') });

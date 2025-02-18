@@ -6,7 +6,6 @@ import {
   Button,
   Form,
 } from 'react-bootstrap';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import cn from 'classnames';
@@ -16,6 +15,8 @@ import {
   renameChannel,
 } from '../features/channelsSlice';
 import { openModal, closeModal } from '../features/uiSlice';
+import axiosInstance from '../utils/axiosInstance';
+import { ROUTES } from '../routes';
 
 const ChannelItem = ({ channel }) => {
   const { t } = useTranslation();
@@ -44,7 +45,7 @@ const ChannelItem = ({ channel }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/v1/channels/${channel.id}`, {
+      await axiosInstance.delete(`${ROUTES.CHANNELS}/${channel.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -81,8 +82,8 @@ const ChannelItem = ({ channel }) => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(
-        `/api/v1/channels/${channel.id}`,
+      await axiosInstance.patch(
+        `${ROUTES.CHANNELS}/${channel.id}`,
         { name: newChannelName },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -90,9 +91,7 @@ const ChannelItem = ({ channel }) => {
       );
 
       dispatch(renameChannel({ id: channel.id, name: newChannelName }));
-      toast.success(t('channel.channelRenamed', {
-        autoClose: 5000,
-      }));
+      toast.success(t('channel.channelRenamed'));
     } catch (err) {
       toast.error(t('errors.connection'));
     } finally {

@@ -5,31 +5,28 @@ import { createSlice } from '@reduxjs/toolkit';
 const messagesSlice = createSlice({
   name: 'messages',
   initialState: {
-    messagesByChannel: {}, // Messages grouped by channel ID
+    messagesByChannel: {},
   },
   reducers: {
-    setMessages(state, action) {
+    getMessages(state, action) {
       const { channelId, messages } = action.payload;
       state.messagesByChannel[channelId] = messages;
     },
-    addMessage(state, action) {
+    addMessage: (state, action) => {
       const message = action.payload;
-      if (!state.messagesByChannel[message.channelId]) {
-        state.messagesByChannel[message.channelId] = [];
+      const { channelId } = message;
+      if (!state.messagesByChannel[channelId]) {
+        state.messagesByChannel[channelId] = [];
       }
-      state.messagesByChannel[message.channelId].push(message);
-    },
-    removeMessagesByChannel(state, action) {
-      const channelId = action.payload;
-      delete state.messagesByChannel[channelId];
+      state.messagesByChannel[channelId].push(message);
+      console.log('Redux reducer addMessage called:', message);
     },
   },
 });
 
 export const {
-  setMessages,
+  getMessages,
   addMessage,
-  removeMessagesByChannel,
 } = messagesSlice.actions;
 
 export default messagesSlice.reducer;

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
-import { getChannels, setActiveChannelId } from '../features/channelsSlice';
+import { setActiveChannelId } from '../features/channelsSlice';
 import { closeModal } from '../features/uiSlice';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -40,33 +40,20 @@ const AddChannelModal = () => {
         .required(t('errors.channelNameRequired')),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      try {
-        const filteredChannelName = filterProfanity(values.channelName);
-
-        const token = localStorage.getItem('token');
-        const response = await axios.post(
-          '/api/v1/channels',
-          { name: filteredChannelName },
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        const newChannel = response.data;
-        dispatch(getChannels([...channels, newChannel]));
-        dispatch(setActiveChannelId(newChannel.id));
-        toast.success(t('channel.channelCreated'));
-        handleCloseModal();
-      } catch (error) {
-        console.error('Failed to create channel:', error);
-      } finally {
-        setSubmitting(false);
-      }
+      const filteredChannelName = filterProfanity(values.channelName);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        '/api/v1/channels',
+        { name: filteredChannelName },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      const newChannel = response.data;
+      dispatch(setActiveChannelId(newChannel.id));
+      toast.success(t('channel.channelCreated'));
+      handleCloseModal();
+      setSubmitting(false);
     },
   });
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      formik.resetForm();
-    }
-  }, [isModalOpen]);
 
   return (
     <Modal centered show={isModalOpen && modalType === 'addChannel'} onHide={handleCloseModal}>
