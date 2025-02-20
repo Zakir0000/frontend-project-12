@@ -1,7 +1,7 @@
 // src/context/ApiContext.jsx
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { createContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { connectSocket, disconnectSocket } from '../services/socketService';
+import { connectSocket } from '../services/socketService';
 import { addChannel, removeChannel, renameChannel } from '../features/channelsSlice';
 import { addMessage } from '../features/messagesSlice';
 
@@ -16,8 +16,6 @@ export const ApiContextProvider = ({ children }) => {
     removeChannel,
     renameChannel,
   }), [dispatch]);
-
-  useEffect(() => () => disconnectSocket(), []);
 
   const api = useMemo(() => ({
     addNewMessage: (message, callback) => {

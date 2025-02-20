@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { connectSocket, disconnectSocket } from '../services/socketService';
+import { connectSocket } from '../services/socketService';
 import {
   addChannel,
   removeChannel,
@@ -12,16 +12,12 @@ const useSocket = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const socket = connectSocket(dispatch, {
+    connectSocket(dispatch, {
       addMessage,
       addChannel,
       removeChannel,
       renameChannel,
     });
-
-    return () => {
-      disconnectSocket(socket);
-    };
   }, [dispatch]);
 };
 

@@ -7,9 +7,12 @@ import Rollbar from 'rollbar';
 import App from './components/App';
 import resources from './locales/index.js';
 import store from './app/store';
+import { connectSocket } from './services/socketService.js';
+import { addMessage } from './features/messagesSlice.js';
+import { addChannel, removeChannel, renameChannel } from './features/channelsSlice.js';
 
 const rollbarConfig = {
-  accessToken: '60cb77910f474fdcbcb46d23c87f8d20',
+  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
   environment: process.env.NODE_ENV || 'production',
 };
 
@@ -28,6 +31,13 @@ const init = async () => {
 
   const rollbar = new Rollbar(rollbarConfig);
   rollbar.error('Intentional Rollbar Error');
+
+  connectSocket(store.dispatch, {
+    addMessage,
+    addChannel,
+    removeChannel,
+    renameChannel,
+  });
 
   return (
     <RollbarProvider instance={rollbar}>
