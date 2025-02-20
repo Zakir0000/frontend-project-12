@@ -13,7 +13,7 @@ import { addChannel, removeChannel, renameChannel } from './features/channelsSli
 
 const rollbarConfig = {
   accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
-  environment: process.env.NODE_ENV || 'production',
+  environment: import.meta.env.VITE_NODE_ENV || 'production',
 };
 
 const init = async () => {
