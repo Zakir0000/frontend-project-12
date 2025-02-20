@@ -11,8 +11,10 @@ import { connectSocket } from './services/socketService.js';
 import { addMessage } from './features/messagesSlice.js';
 import { addChannel, removeChannel, renameChannel } from './features/channelsSlice.js';
 
+console.log(import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN);
+
 const rollbarConfig = {
-  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
+  accessToken: '60cb77910f474fdcbcb46d23c87f8d20',
   environment: import.meta.env.VITE_NODE_ENV || 'production',
 };
 
